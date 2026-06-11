@@ -71,17 +71,18 @@ export function toAPATitleCase(input: string): string {
 export function stripDomain(html: string, domain: string): string {
   const d = domain.trim();
   if (!d) return html;
-  // Normalize: strip protocol + trailing slash + leading www.
+  // Normalize: strip protocol and leading www. only — keep trailing slashes exactly as entered
   const clean = d
     .replace(/^https?:\/\//i, "")
-    .replace(/^www\./i, "")
-    .replace(/\/+$/, "");
+    .replace(/^www\./i, "");
   if (!clean) return html;
-  const escaped = clean.replace(/[.*+?^${}()|[\]\\]/g, "\\$1".replace("$1", "\\$&"));
-  // safer escape:
-  const safe = clean.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  void escaped;
-  // Match optional protocol, optional www., domain, optional trailing slash
-  const re = new RegExp(`(?:https?:\\/\\/)?(?:www\\.)?${safe}\\/?`, "gi");
+
+  const hasTrailingSlash = clean.endsWith("/");
+  const base = hasTrailingSlash ? clean.slice(0, -1) : clean;
+  const safe = base.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const slash = hasTrailingSlash ? "\\/" : "";
+
+  // Match optional protocol, optional www., then the domain (with trailing slash only if user included it)
+  const re = new RegExp(`(?:https?:\\/\\/)?(?:www\\.)?${safe}${slash}`, "gi");
   return html.replace(re, "");
 }
