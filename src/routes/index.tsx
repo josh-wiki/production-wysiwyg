@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Editor from "react-simple-code-editor";
+// prismjs's default entry registers `markup` (HTML) — no extra component import needed,
+// and importing `prismjs/components/prism-markup` directly breaks SSR (expects global Prism).
 import Prism from "prismjs";
-import "prismjs/components/prism-markup";
 import {
   Code2,
   Copy,
