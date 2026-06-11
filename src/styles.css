@@ -153,3 +153,35 @@
     color: var(--color-foreground);
   }
 }
+
+/* Prism HTML syntax highlighting (color-coded code editor) */
+.prism-html-editor .token.tag,
+.prism-html-editor .token.tag .token.punctuation {
+  color: #f472b6;
+}
+.prism-html-editor .token.tag .token.tag {
+  color: #f472b6;
+}
+.prism-html-editor .token.attr-name {
+  color: #fbbf24;
+}
+.prism-html-editor .token.attr-value,
+.prism-html-editor .token.attr-value .token.punctuation {
+  color: #86efac;
+}
+.prism-html-editor .token.punctuation {
+  color: #94a3b8;
+}
+.prism-html-editor .token.comment {
+  color: #64748b;
+  font-style: italic;
+}
+.prism-html-editor .token.doctype {
+  color: #c4b5fd;
+}
+.prism-html-editor .token.entity {
+  color: #f59e0b;
+}
+.prism-html-editor textarea:focus {
+  outline: none;
+}
