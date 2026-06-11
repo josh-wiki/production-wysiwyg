@@ -280,17 +280,33 @@ function TextTools() {
         <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           <Wand2 className="h-3.5 w-3.5" /> Text tools
         </span>
-        <span className="text-[11px] text-muted-foreground">
-          Type once · {stats.words} words · {stats.chars} chars
-        </span>
       </div>
       <div className="grid gap-2 md:grid-cols-2">
-        <Textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Paste text here — then run a tool on it…"
-          className="min-h-[110px] text-xs"
-        />
+        <div className="flex flex-col gap-2">
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Paste text here — then run a tool on it…"
+            className="min-h-[110px] text-xs"
+          />
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
+            <span className="inline-flex items-center gap-1 rounded bg-secondary/60 px-1.5 py-0.5">
+              <Type className="h-3 w-3" /> {stats.words} words
+            </span>
+            <span className="inline-flex items-center gap-1 rounded bg-secondary/60 px-1.5 py-0.5">
+              <Hash className="h-3 w-3" /> {stats.chars} chars
+            </span>
+            <span className="inline-flex items-center gap-1 rounded bg-secondary/60 px-1.5 py-0.5">
+              <Scissors className="h-3 w-3" /> {stats.charsNoSpaces} no-spaces
+            </span>
+            <span className="inline-flex items-center gap-1 rounded bg-secondary/60 px-1.5 py-0.5">
+              <FlaskConical className="h-3 w-3" /> {stats.sentences} sentences
+            </span>
+            <span className="inline-flex items-center gap-1 rounded bg-secondary/60 px-1.5 py-0.5">
+              <Wand2 className="h-3 w-3" /> ~{stats.readingMin} min read
+            </span>
+          </div>
+        </div>
         <div className="flex flex-col gap-2">
           <div className="flex flex-wrap gap-2">
             <Button size="sm" variant="outline" onClick={runSlug} disabled={!input}>
