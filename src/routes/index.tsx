@@ -67,7 +67,7 @@ export const Route = createFileRoute("/")({
   component: SandboxPage,
 });
 
-type View = "visual" | "html";
+type View = "visual" | "html" | "split";
 
 function SandboxPage() {
   const [html, setHtml] = useState(STARTER_HTML);
