@@ -54,7 +54,7 @@ const SNIPPETS: { label: string; html: string }[] = [
   },
 ];
 
-const STORAGE_KEY = "html-sandbox.v1";
+const STORAGE_KEY = "html-sandbox.v2";
 
 export const Route = createFileRoute("/")({
   head: () => ({
