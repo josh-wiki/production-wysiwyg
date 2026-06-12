@@ -86,3 +86,23 @@ export function stripDomain(html: string, domain: string): string {
   const re = new RegExp(`(?:https?:\\/\\/)?(?:www\\.)?${safe}${slash}`, "gi");
   return html.replace(re, "");
 }
+
+// Remove all inline style="..." attributes from HTML
+export function stripInlineStyles(html: string): string {
+  return html
+    .replace(/\s+style\s*=\s*"[^"]*"/gi, "")
+    .replace(/\s+style\s*=\s*'[^']*'/gi, "");
+}
+
+// Collapse extra whitespace: blank lines, runs of spaces between tags,
+// and trim leading/trailing whitespace on each line.
+export function cleanWhitespace(html: string): string {
+  return html
+    .replace(/>\s+</g, "><")           // remove whitespace between tags
+    .replace(/[ \t]+/g, " ")           // collapse runs of spaces/tabs
+    .replace(/\n\s*\n+/g, "\n")        // collapse blank lines
+    .replace(/&nbsp;/g, " ")           // normalize nbsp
+    .replace(/^\s+|\s+$/g, "")         // trim ends
+    .trim();
+}
+
