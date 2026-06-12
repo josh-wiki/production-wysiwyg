@@ -49,10 +49,13 @@ const SNIPPETS: { label: string; html: string }[] = [
     html: `<div style="max-width: 1000px; margin: auto; padding: 5px;">\n\n</div>`,
   },
   {
-    label: "CTAs",
-    html: `<div style="text-align: center; display: flex; flex-wrap: wrap; justify-content: center;"><a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: #000000; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">View Inventory</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: #000000; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">Financing</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: #000000; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">About Us</a></div>`,
+    label: "Img",
+    html: `<div style="width: 100%; height: 100%; min-height: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center;">\n  <img src="[replace]" alt="[replace]" style="width: 100%; height: 100%; object-fit: cover;">\n</div>`,
   },
 ];
+
+const ctaSnippet = (bg: string) =>
+  `<div style="text-align: center; display: flex; flex-wrap: wrap; justify-content: center;"><a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">View Inventory</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">Financing</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">About Us</a></div>`;
 
 const STORAGE_KEY = "html-sandbox.v2";
 
@@ -83,6 +86,7 @@ function SandboxPage() {
   const [editable, setEditable] = useState(true);
   const [copied, setCopied] = useState(false);
   const [domain, setDomain] = useState("");
+  const [ctaColor, setCtaColor] = useState("#000000");
 
   // Load/save to localStorage
   useEffect(() => {
@@ -168,6 +172,29 @@ function SandboxPage() {
                 {s.label}
               </Button>
             ))}
+            <span className="ml-1 h-4 w-px bg-border" />
+            <input
+              type="color"
+              value={ctaColor}
+              onChange={(e) => setCtaColor(e.target.value)}
+              className="h-6 w-6 cursor-pointer rounded border border-border bg-transparent p-0"
+              title="CTA button color"
+            />
+            <Input
+              value={ctaColor}
+              onChange={(e) => setCtaColor(e.target.value)}
+              className="h-6 w-20 px-1.5 font-mono text-[11px]"
+              placeholder="#000000"
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs"
+              onClick={() => insertSnippet(ctaSnippet(ctaColor))}
+              title="Insert CTAs with chosen color"
+            >
+              CTAs
+            </Button>
           </div>
           <Button
             variant="ghost"
