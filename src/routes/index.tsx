@@ -8,14 +8,17 @@ import {
   Code2,
   Copy,
   Check,
+  Columns2,
   Download,
   Eraser,
   FlaskConical,
   Hash,
   Lock,
   MousePointerClick,
+  Paintbrush,
   RotateCcw,
   Scissors,
+  SquareStack,
   Type,
   Unlock,
   Wand2,
@@ -24,7 +27,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { countStats, slugify, stripDomain, toAPATitleCase } from "@/lib/text-tools";
+import {
+  cleanWhitespace,
+  countStats,
+  slugify,
+  stripDomain,
+  stripInlineStyles,
+  toAPATitleCase,
+} from "@/lib/text-tools";
+
 
 const STARTER_HTML = `<section style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(180deg,#ffffff,#f4f4fb);padding:72px 24px;text-align:center;color:#0f172a;">
   <div style="max-width:760px;margin:0 auto;">
@@ -56,7 +67,7 @@ export const Route = createFileRoute("/")({
   component: SandboxPage,
 });
 
-type View = "visual" | "html";
+type View = "visual" | "html" | "split";
 
 function SandboxPage() {
   const [html, setHtml] = useState(STARTER_HTML);
@@ -129,6 +140,22 @@ function SandboxPage() {
         </div>
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setHtml((prev) => stripInlineStyles(prev))}
+            title="Remove all inline style attributes"
+          >
+            <Paintbrush className="mr-1.5 h-3.5 w-3.5" /> Clean styles
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setHtml((prev) => cleanWhitespace(prev))}
+            title="Collapse blank lines and extra spaces"
+          >
+            <SquareStack className="mr-1.5 h-3.5 w-3.5" /> Clean spaces
+          </Button>
           <Button variant="ghost" size="sm" onClick={handleReset}>
             <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reset
           </Button>
@@ -147,6 +174,7 @@ function SandboxPage() {
             )}
           </Button>
         </div>
+
       </header>
 
       <DomainStripper domain={domain} setDomain={setDomain} onStrip={handleStripDomain} />
@@ -191,6 +219,12 @@ function SandboxPage() {
             >
               <Code2 className="mr-1 h-3.5 w-3.5" /> HTML
             </TabsTrigger>
+            <TabsTrigger
+              value="split"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <Columns2 className="mr-1 h-3.5 w-3.5" /> Split
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -198,10 +232,16 @@ function SandboxPage() {
       <main className="flex-1 overflow-auto bg-background p-4">
         {view === "visual" ? (
           <VisualEditor html={html} editable={editable} onChange={setHtml} />
-        ) : (
+        ) : view === "html" ? (
           <CodeEditor html={html} editable={editable} onChange={setHtml} />
+        ) : (
+          <div className="grid h-full gap-4 lg:grid-cols-2">
+            <VisualEditor html={html} editable={editable} onChange={setHtml} />
+            <CodeEditor html={html} editable={editable} onChange={setHtml} />
+          </div>
         )}
       </main>
+
     </div>
   );
 }
