@@ -127,8 +127,12 @@ function SandboxPage() {
   };
 
   const handleReset = () => {
-    if (!confirm("Reset sandbox HTML to the starter template?")) return;
+    if (!confirm("Clear the sandbox HTML?")) return;
     setHtml(STARTER_HTML);
+  };
+
+  const insertSnippet = (snippet: string) => {
+    setHtml((prev) => (prev.trim() ? `${prev}\n${snippet}` : snippet));
   };
 
   return (
