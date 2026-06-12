@@ -140,6 +140,22 @@ function SandboxPage() {
         </div>
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setHtml((prev) => stripInlineStyles(prev))}
+            title="Remove all inline style attributes"
+          >
+            <Paintbrush className="mr-1.5 h-3.5 w-3.5" /> Clean styles
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setHtml((prev) => cleanWhitespace(prev))}
+            title="Collapse blank lines and extra spaces"
+          >
+            <SquareStack className="mr-1.5 h-3.5 w-3.5" /> Clean spaces
+          </Button>
           <Button variant="ghost" size="sm" onClick={handleReset}>
             <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reset
           </Button>
@@ -158,6 +174,7 @@ function SandboxPage() {
             )}
           </Button>
         </div>
+
       </header>
 
       <DomainStripper domain={domain} setDomain={setDomain} onStrip={handleStripDomain} />
