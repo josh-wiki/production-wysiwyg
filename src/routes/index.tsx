@@ -37,14 +37,22 @@ import {
 } from "@/lib/text-tools";
 
 
-const STARTER_HTML = `<section style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(180deg,#ffffff,#f4f4fb);padding:72px 24px;text-align:center;color:#0f172a;">
-  <div style="max-width:760px;margin:0 auto;">
-    <p style="margin:0 0 16px;font-size:13px;letter-spacing:0.14em;text-transform:uppercase;font-weight:700;color:#4f46e5;">New release</p>
-    <h1 style="margin:0 0 20px;font-size:48px;line-height:1.1;font-weight:800;letter-spacing:-0.02em;">Ship better pages, faster.</h1>
-    <p style="margin:0 auto 36px;font-size:19px;line-height:1.55;color:#475569;max-width:620px;">A drop-in HTML sandbox you can paste into any CMS in seconds.</p>
-    <a href="https://example.com/signup" style="display:inline-block;padding:14px 28px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#a78bfa);color:#ffffff;font-weight:600;font-size:16px;text-decoration:none;box-shadow:0 12px 30px -10px #4f46e580;">Start free trial</a>
-  </div>
-</section>`;
+const STARTER_HTML = "";
+
+const SNIPPETS: { label: string; html: string }[] = [
+  {
+    label: "Page",
+    html: `<div style="max-width: 1400px; margin: auto; padding: 5px;">\n\n</div>`,
+  },
+  {
+    label: "Post",
+    html: `<div style="max-width: 1000px; margin: auto; padding: 5px;">\n\n</div>`,
+  },
+  {
+    label: "CTAs",
+    html: `<div style="text-align: center; display: flex; flex-wrap: wrap; justify-content: center;"><a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: #000000; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">View Inventory</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: #000000; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">Financing</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: #000000; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">About Us</a></div>`,
+  },
+];
 
 const STORAGE_KEY = "html-sandbox.v1";
 
@@ -119,8 +127,12 @@ function SandboxPage() {
   };
 
   const handleReset = () => {
-    if (!confirm("Reset sandbox HTML to the starter template?")) return;
+    if (!confirm("Clear the sandbox HTML?")) return;
     setHtml(STARTER_HTML);
+  };
+
+  const insertSnippet = (snippet: string) => {
+    setHtml((prev) => (prev.trim() ? `${prev}\n${snippet}` : snippet));
   };
 
   return (
@@ -140,6 +152,23 @@ function SandboxPage() {
         </div>
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
+          <div className="mr-1 flex items-center gap-1 rounded-md border border-border bg-secondary/40 p-1">
+            <span className="px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Insert
+            </span>
+            {SNIPPETS.map((s) => (
+              <Button
+                key={s.label}
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs"
+                onClick={() => insertSnippet(s.html)}
+                title={`Insert ${s.label} snippet`}
+              >
+                {s.label}
+              </Button>
+            ))}
+          </div>
           <Button
             variant="ghost"
             size="sm"
@@ -452,7 +481,13 @@ function CodeEditor({
       <Editor
         value={html}
         onValueChange={(v) => editable && onChange(v)}
-        highlight={(code) => Prism.highlight(code, Prism.languages.markup, "markup")}
+        highlight={(code) => {
+          const highlighted = Prism.highlight(code, Prism.languages.markup, "markup");
+          return highlighted.replace(
+            /\[replace\]/g,
+            '<span class="replace-token">[replace]</span>',
+          );
+        }}
         padding={16}
         readOnly={!editable}
         className="prism-html-editor min-h-[520px] font-mono text-xs"
