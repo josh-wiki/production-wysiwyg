@@ -481,7 +481,13 @@ function CodeEditor({
       <Editor
         value={html}
         onValueChange={(v) => editable && onChange(v)}
-        highlight={(code) => Prism.highlight(code, Prism.languages.markup, "markup")}
+        highlight={(code) => {
+          const highlighted = Prism.highlight(code, Prism.languages.markup, "markup");
+          return highlighted.replace(
+            /\[replace\]/g,
+            '<span class="replace-token">[replace]</span>',
+          );
+        }}
         padding={16}
         readOnly={!editable}
         className="prism-html-editor min-h-[520px] font-mono text-xs"
