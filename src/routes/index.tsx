@@ -172,6 +172,29 @@ function SandboxPage() {
                 {s.label}
               </Button>
             ))}
+            <span className="ml-1 h-4 w-px bg-border" />
+            <input
+              type="color"
+              value={ctaColor}
+              onChange={(e) => setCtaColor(e.target.value)}
+              className="h-6 w-6 cursor-pointer rounded border border-border bg-transparent p-0"
+              title="CTA button color"
+            />
+            <Input
+              value={ctaColor}
+              onChange={(e) => setCtaColor(e.target.value)}
+              className="h-6 w-20 px-1.5 font-mono text-[11px]"
+              placeholder="#000000"
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs"
+              onClick={() => insertSnippet(ctaSnippet(ctaColor))}
+              title="Insert CTAs with chosen color"
+            >
+              CTAs
+            </Button>
           </div>
           <Button
             variant="ghost"
