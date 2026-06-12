@@ -86,6 +86,7 @@ function SandboxPage() {
   const [editable, setEditable] = useState(true);
   const [copied, setCopied] = useState(false);
   const [domain, setDomain] = useState("");
+  const [ctaColor, setCtaColor] = useState("#000000");
 
   // Load/save to localStorage
   useEffect(() => {
