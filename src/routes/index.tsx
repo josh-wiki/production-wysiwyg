@@ -219,6 +219,12 @@ function SandboxPage() {
             >
               <Code2 className="mr-1 h-3.5 w-3.5" /> HTML
             </TabsTrigger>
+            <TabsTrigger
+              value="split"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <Columns2 className="mr-1 h-3.5 w-3.5" /> Split
+            </TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
@@ -226,10 +232,16 @@ function SandboxPage() {
       <main className="flex-1 overflow-auto bg-background p-4">
         {view === "visual" ? (
           <VisualEditor html={html} editable={editable} onChange={setHtml} />
-        ) : (
+        ) : view === "html" ? (
           <CodeEditor html={html} editable={editable} onChange={setHtml} />
+        ) : (
+          <div className="grid h-full gap-4 lg:grid-cols-2">
+            <VisualEditor html={html} editable={editable} onChange={setHtml} />
+            <CodeEditor html={html} editable={editable} onChange={setHtml} />
+          </div>
         )}
       </main>
+
     </div>
   );
 }
