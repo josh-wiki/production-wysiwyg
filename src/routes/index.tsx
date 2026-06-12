@@ -8,14 +8,17 @@ import {
   Code2,
   Copy,
   Check,
+  Columns2,
   Download,
   Eraser,
   FlaskConical,
   Hash,
   Lock,
   MousePointerClick,
+  Paintbrush,
   RotateCcw,
   Scissors,
+  SquareStack,
   Type,
   Unlock,
   Wand2,
@@ -24,7 +27,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { countStats, slugify, stripDomain, toAPATitleCase } from "@/lib/text-tools";
+import {
+  cleanWhitespace,
+  countStats,
+  slugify,
+  stripDomain,
+  stripInlineStyles,
+  toAPATitleCase,
+} from "@/lib/text-tools";
+
 
 const STARTER_HTML = `<section style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:linear-gradient(180deg,#ffffff,#f4f4fb);padding:72px 24px;text-align:center;color:#0f172a;">
   <div style="max-width:760px;margin:0 auto;">
