@@ -152,6 +152,23 @@ function SandboxPage() {
         </div>
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
+          <div className="mr-1 flex items-center gap-1 rounded-md border border-border bg-secondary/40 p-1">
+            <span className="px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Insert
+            </span>
+            {SNIPPETS.map((s) => (
+              <Button
+                key={s.label}
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs"
+                onClick={() => insertSnippet(s.html)}
+                title={`Insert ${s.label} snippet`}
+              >
+                {s.label}
+              </Button>
+            ))}
+          </div>
           <Button
             variant="ghost"
             size="sm"
