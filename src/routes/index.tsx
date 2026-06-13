@@ -196,8 +196,10 @@ function SandboxPage() {
             Visual + color-coded HTML editor with handy text utilities.
           </p>
         </div>
+      </header>
 
-        <div className="ml-auto flex flex-wrap items-center gap-2">
+      <CollapsibleSection title="Clean & actions" icon={<Eraser className="h-3.5 w-3.5" />}>
+        <div className="flex flex-wrap items-center gap-2 px-4 py-2.5">
           <Button
             variant="ghost"
             size="sm"
@@ -240,8 +242,7 @@ function SandboxPage() {
             )}
           </Button>
         </div>
-
-      </header>
+      </CollapsibleSection>
 
       <CollapsibleSection title="Strip domain" icon={<Scissors className="h-3.5 w-3.5" />}>
         <DomainStripper domain={domain} setDomain={setDomain} onStrip={handleStripDomain} />
