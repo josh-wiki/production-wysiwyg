@@ -12,6 +12,9 @@ import {
   Columns2,
   Download,
   Eraser,
+  Pencil,
+  Plus,
+  Trash2,
   FlaskConical,
   Hash,
   Lock,
@@ -46,7 +49,9 @@ import {
 
 const STARTER_HTML = "";
 
-const SNIPPETS: { label: string; html: string }[] = [
+type Snippet = { label: string; html: string };
+
+const DEFAULT_SNIPPETS: Snippet[] = [
   {
     label: "Page",
     html: `<div style="max-width: 1400px; margin: auto; padding: 5px;">\n\n</div>`,
@@ -60,6 +65,8 @@ const SNIPPETS: { label: string; html: string }[] = [
     html: `<div style="width: 100%; height: 100%; min-height: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center;">\n  <img src="[replace]" alt="[replace]" style="width: 100%; height: 100%; object-fit: cover;">\n</div>`,
   },
 ];
+
+const SNIPPETS_KEY = "html-sandbox.snippets.v1";
 
 const ctaSnippet = (bg: string) =>
   `<div style="text-align: center; display: flex; flex-wrap: wrap; justify-content: center;"><a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">View Inventory</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">Financing</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">About Us</a></div>`;
