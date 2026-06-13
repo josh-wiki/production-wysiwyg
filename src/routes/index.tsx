@@ -101,6 +101,34 @@ function SandboxPage() {
   const [copied, setCopied] = useState(false);
   const [domain, setDomain] = useState("");
   const [ctaColor, setCtaColor] = useState("#000000");
+  const [snippets, setSnippets] = useState<Snippet[]>(DEFAULT_SNIPPETS);
+  const [editSnippets, setEditSnippets] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(SNIPPETS_KEY);
+      if (saved) setSnippets(JSON.parse(saved));
+    } catch {
+      /* noop */
+    }
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem(SNIPPETS_KEY, JSON.stringify(snippets));
+    } catch {
+      /* noop */
+    }
+  }, [snippets]);
+
+  const updateSnippet = (i: number, patch: Partial<Snippet>) =>
+    setSnippets((arr) => arr.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
+  const deleteSnippet = (i: number) =>
+    setSnippets((arr) => arr.filter((_, idx) => idx !== i));
+  const addSnippet = () =>
+    setSnippets((arr) => [...arr, { label: "New", html: "" }]);
+  const resetSnippets = () => {
+    if (confirm("Reset snippets to defaults?")) setSnippets(DEFAULT_SNIPPETS);
+  };
 
   // Load/save to localStorage
   useEffect(() => {
