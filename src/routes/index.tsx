@@ -163,46 +163,6 @@ function SandboxPage() {
         </div>
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          <div className="mr-1 flex items-center gap-1 rounded-md border border-border bg-secondary/40 p-1">
-            <span className="px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Insert
-            </span>
-            {SNIPPETS.map((s) => (
-              <Button
-                key={s.label}
-                variant="ghost"
-                size="sm"
-                className="h-7 px-2 text-xs"
-                onClick={() => insertSnippet(s.html)}
-                title={`Insert ${s.label} snippet`}
-              >
-                {s.label}
-              </Button>
-            ))}
-            <span className="ml-1 h-4 w-px bg-border" />
-            <input
-              type="color"
-              value={ctaColor}
-              onChange={(e) => setCtaColor(e.target.value)}
-              className="h-6 w-6 cursor-pointer rounded border border-border bg-transparent p-0"
-              title="CTA button color"
-            />
-            <Input
-              value={ctaColor}
-              onChange={(e) => setCtaColor(e.target.value)}
-              className="h-6 w-20 px-1.5 font-mono text-[11px]"
-              placeholder="#000000"
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-xs"
-              onClick={() => insertSnippet(ctaSnippet(ctaColor))}
-              title="Insert CTAs with chosen color"
-            >
-              CTAs
-            </Button>
-          </div>
           <Button
             variant="ghost"
             size="sm"
@@ -210,6 +170,14 @@ function SandboxPage() {
             title="Remove all inline style attributes"
           >
             <Paintbrush className="mr-1.5 h-3.5 w-3.5" /> Clean styles
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setHtml((prev) => stripSpans(prev))}
+            title="Unwrap all <span> tags"
+          >
+            <Eraser className="mr-1.5 h-3.5 w-3.5" /> Clean spans
           </Button>
           <Button
             variant="ghost"
@@ -240,9 +208,57 @@ function SandboxPage() {
 
       </header>
 
-      <DomainStripper domain={domain} setDomain={setDomain} onStrip={handleStripDomain} />
+      <CollapsibleSection title="Strip domain" icon={<Scissors className="h-3.5 w-3.5" />}>
+        <DomainStripper domain={domain} setDomain={setDomain} onStrip={handleStripDomain} />
+      </CollapsibleSection>
 
-      <TextTools />
+      <CollapsibleSection title="Text tools" icon={<Wand2 className="h-3.5 w-3.5" />}>
+        <TextTools />
+      </CollapsibleSection>
+
+      <CollapsibleSection
+        title="Insert snippets"
+        icon={<SquareStack className="h-3.5 w-3.5" />}
+        defaultOpen
+      >
+        <div className="flex flex-wrap items-center gap-2 px-4 py-2.5">
+          {SNIPPETS.map((s) => (
+            <Button
+              key={s.label}
+              variant="outline"
+              size="sm"
+              className="h-8"
+              onClick={() => insertSnippet(s.html)}
+              title={`Insert ${s.label} snippet`}
+            >
+              {s.label}
+            </Button>
+          ))}
+          <span className="mx-1 h-5 w-px bg-border" />
+          <input
+            type="color"
+            value={ctaColor}
+            onChange={(e) => setCtaColor(e.target.value)}
+            className="h-7 w-8 cursor-pointer rounded border border-border bg-transparent p-0"
+            title="CTA button color"
+          />
+          <Input
+            value={ctaColor}
+            onChange={(e) => setCtaColor(e.target.value)}
+            className="h-8 w-24 px-2 font-mono text-xs"
+            placeholder="#000000"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8"
+            onClick={() => insertSnippet(ctaSnippet(ctaColor))}
+            title="Insert CTAs with chosen color"
+          >
+            CTAs
+          </Button>
+        </div>
+      </CollapsibleSection>
 
       <div className="flex flex-wrap items-center gap-2 border-b border-border bg-card/20 px-4 py-2.5">
         <span className="inline-flex items-center gap-1 rounded border border-primary/50 bg-primary/15 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-primary">
