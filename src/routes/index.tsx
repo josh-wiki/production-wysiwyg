@@ -257,9 +257,9 @@ function SandboxPage() {
         defaultOpen
       >
         <div className="flex flex-wrap items-center gap-2 px-4 py-2.5">
-          {SNIPPETS.map((s) => (
+          {snippets.map((s, i) => (
             <Button
-              key={s.label}
+              key={i}
               variant="outline"
               size="sm"
               className="h-8"
@@ -292,7 +292,57 @@ function SandboxPage() {
           >
             CTAs
           </Button>
+          <span className="mx-1 h-5 w-px bg-border" />
+          <Button
+            variant={editSnippets ? "default" : "ghost"}
+            size="sm"
+            className="h-8"
+            onClick={() => setEditSnippets((v) => !v)}
+            title="Edit snippet buttons"
+          >
+            <Pencil className="mr-1.5 h-3.5 w-3.5" />
+            {editSnippets ? "Done" : "Edit"}
+          </Button>
         </div>
+        {editSnippets && (
+          <div className="flex flex-col gap-2 border-t border-border bg-background/40 px-4 py-3">
+            {snippets.map((s, i) => (
+              <div key={i} className="flex flex-col gap-1.5 rounded border border-border bg-card/40 p-2">
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={s.label}
+                    onChange={(e) => updateSnippet(i, { label: e.target.value })}
+                    className="h-7 max-w-[180px] text-xs"
+                    placeholder="Label"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="ml-auto h-7 text-destructive hover:text-destructive"
+                    onClick={() => deleteSnippet(i)}
+                    title="Delete snippet"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+                <Textarea
+                  value={s.html}
+                  onChange={(e) => updateSnippet(i, { html: e.target.value })}
+                  className="min-h-[80px] font-mono text-xs"
+                  placeholder="HTML snippet…"
+                />
+              </div>
+            ))}
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="outline" size="sm" className="h-8" onClick={addSnippet}>
+                <Plus className="mr-1.5 h-3.5 w-3.5" /> Add snippet
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8" onClick={resetSnippets}>
+                <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reset to defaults
+              </Button>
+            </div>
+          </div>
+        )}
       </CollapsibleSection>
 
       <div className="flex flex-wrap items-center gap-2 border-b border-border bg-card/20 px-4 py-2.5">
