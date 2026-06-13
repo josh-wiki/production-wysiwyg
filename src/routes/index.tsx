@@ -8,6 +8,7 @@ import {
   Code2,
   Copy,
   Check,
+  ChevronDown,
   Columns2,
   Download,
   Eraser,
@@ -28,11 +29,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
   cleanWhitespace,
   countStats,
   slugify,
   stripDomain,
   stripInlineStyles,
+  stripSpans,
   toAPATitleCase,
 } from "@/lib/text-tools";
 
