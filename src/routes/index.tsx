@@ -12,6 +12,9 @@ import {
   Columns2,
   Download,
   Eraser,
+  Pencil,
+  Plus,
+  Trash2,
   FlaskConical,
   Hash,
   Lock,
@@ -46,7 +49,9 @@ import {
 
 const STARTER_HTML = "";
 
-const SNIPPETS: { label: string; html: string }[] = [
+type Snippet = { label: string; html: string };
+
+const DEFAULT_SNIPPETS: Snippet[] = [
   {
     label: "Page",
     html: `<div style="max-width: 1400px; margin: auto; padding: 5px;">\n\n</div>`,
@@ -60,6 +65,8 @@ const SNIPPETS: { label: string; html: string }[] = [
     html: `<div style="width: 100%; height: 100%; min-height: 100%; overflow: hidden; display: flex; justify-content: center; align-items: center;">\n  <img src="[replace]" alt="[replace]" style="width: 100%; height: 100%; object-fit: cover;">\n</div>`,
   },
 ];
+
+const SNIPPETS_KEY = "html-sandbox.snippets.v1";
 
 const ctaSnippet = (bg: string) =>
   `<div style="text-align: center; display: flex; flex-wrap: wrap; justify-content: center;"><a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">View Inventory</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">Financing</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">About Us</a></div>`;
@@ -94,6 +101,34 @@ function SandboxPage() {
   const [copied, setCopied] = useState(false);
   const [domain, setDomain] = useState("");
   const [ctaColor, setCtaColor] = useState("#000000");
+  const [snippets, setSnippets] = useState<Snippet[]>(DEFAULT_SNIPPETS);
+  const [editSnippets, setEditSnippets] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(SNIPPETS_KEY);
+      if (saved) setSnippets(JSON.parse(saved));
+    } catch {
+      /* noop */
+    }
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem(SNIPPETS_KEY, JSON.stringify(snippets));
+    } catch {
+      /* noop */
+    }
+  }, [snippets]);
+
+  const updateSnippet = (i: number, patch: Partial<Snippet>) =>
+    setSnippets((arr) => arr.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
+  const deleteSnippet = (i: number) =>
+    setSnippets((arr) => arr.filter((_, idx) => idx !== i));
+  const addSnippet = () =>
+    setSnippets((arr) => [...arr, { label: "New", html: "" }]);
+  const resetSnippets = () => {
+    if (confirm("Reset snippets to defaults?")) setSnippets(DEFAULT_SNIPPETS);
+  };
 
   // Load/save to localStorage
   useEffect(() => {
@@ -222,9 +257,9 @@ function SandboxPage() {
         defaultOpen
       >
         <div className="flex flex-wrap items-center gap-2 px-4 py-2.5">
-          {SNIPPETS.map((s) => (
+          {snippets.map((s, i) => (
             <Button
-              key={s.label}
+              key={i}
               variant="outline"
               size="sm"
               className="h-8"
@@ -257,7 +292,57 @@ function SandboxPage() {
           >
             CTAs
           </Button>
+          <span className="mx-1 h-5 w-px bg-border" />
+          <Button
+            variant={editSnippets ? "default" : "ghost"}
+            size="sm"
+            className="h-8"
+            onClick={() => setEditSnippets((v) => !v)}
+            title="Edit snippet buttons"
+          >
+            <Pencil className="mr-1.5 h-3.5 w-3.5" />
+            {editSnippets ? "Done" : "Edit"}
+          </Button>
         </div>
+        {editSnippets && (
+          <div className="flex flex-col gap-2 border-t border-border bg-background/40 px-4 py-3">
+            {snippets.map((s, i) => (
+              <div key={i} className="flex flex-col gap-1.5 rounded border border-border bg-card/40 p-2">
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={s.label}
+                    onChange={(e) => updateSnippet(i, { label: e.target.value })}
+                    className="h-7 max-w-[180px] text-xs"
+                    placeholder="Label"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="ml-auto h-7 text-destructive hover:text-destructive"
+                    onClick={() => deleteSnippet(i)}
+                    title="Delete snippet"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+                <Textarea
+                  value={s.html}
+                  onChange={(e) => updateSnippet(i, { html: e.target.value })}
+                  className="min-h-[80px] font-mono text-xs"
+                  placeholder="HTML snippet…"
+                />
+              </div>
+            ))}
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="outline" size="sm" className="h-8" onClick={addSnippet}>
+                <Plus className="mr-1.5 h-3.5 w-3.5" /> Add snippet
+              </Button>
+              <Button variant="ghost" size="sm" className="h-8" onClick={resetSnippets}>
+                <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reset to defaults
+              </Button>
+            </div>
+          </div>
+        )}
       </CollapsibleSection>
 
       <div className="flex flex-wrap items-center gap-2 border-b border-border bg-card/20 px-4 py-2.5">
