@@ -94,6 +94,20 @@ export function stripInlineStyles(html: string): string {
     .replace(/\s+style\s*=\s*'[^']*'/gi, "");
 }
 
+// Unwrap all <span ...>...</span> tags (keeps inner content, removes the span wrapper)
+export function stripSpans(html: string): string {
+  let prev = "";
+  let next = html;
+  // Loop in case of nested spans
+  while (prev !== next) {
+    prev = next;
+    next = next
+      .replace(/<span\b[^>]*>/gi, "")
+      .replace(/<\/span\s*>/gi, "");
+  }
+  return next;
+}
+
 // Collapse extra whitespace: blank lines, runs of spaces between tags,
 // and trim leading/trailing whitespace on each line.
 export function cleanWhitespace(html: string): string {
