@@ -550,6 +550,47 @@ function TextTools() {
             <Button size="sm" variant="outline" onClick={runAPA} disabled={!input}>
               <Wand2 className="mr-1.5 h-3.5 w-3.5" /> APA title case
             </Button>
+            <Button
+              size="sm"
+              variant={editApa ? "secondary" : "ghost"}
+              onClick={() => setEditApa((v) => !v)}
+              title="Edit always-capitalized words (abbreviations, brands)"
+            >
+              <Pencil className="mr-1.5 h-3.5 w-3.5" />
+              {editApa ? "Done" : "Edit words"}
+            </Button>
+          </div>
+          {editApa && (
+            <div className="rounded border border-border bg-background/60 p-2">
+              <label className="mb-1 block text-[11px] font-medium text-muted-foreground">
+                Always-capitalized words (comma-separated). Casing here is preserved exactly — e.g. SUVs, Pre-Owned, GMC, BMW.
+              </label>
+              <Textarea
+                value={apaWords.join(", ")}
+                onChange={(e) =>
+                  setApaWords(
+                    e.target.value
+                      .split(/[,\n]/)
+                      .map((s) => s.trim())
+                      .filter(Boolean),
+                  )
+                }
+                placeholder="SUVs, Pre-Owned, GMC, BMW"
+                className="min-h-[60px] text-xs"
+              />
+              <div className="mt-1 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setApaWords(DEFAULT_APA_WORDS)}
+                  className="inline-flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
+                >
+                  <RotateCcw className="h-3 w-3" /> Reset
+                </button>
+              </div>
+            </div>
+          )}
+          <div className="hidden">
+            {/* spacer to keep original structure below */}
           </div>
           <div className="relative flex-1">
             {outputLabel && (
