@@ -31,7 +31,14 @@ const APA_MINOR = new Set([
   "via", "yet", "vs", "vs.",
 ]);
 
-export function toAPATitleCase(input: string): string {
+export function toAPATitleCase(input: string, customWords: string[] = []): string {
+  // Build a lookup of user-defined exact-casing overrides (e.g. "SUVs", "BMW", "Pre-Owned")
+  const overrides = new Map<string, string>();
+  for (const w of customWords) {
+    const trimmed = w.trim();
+    if (trimmed) overrides.set(trimmed.toLowerCase(), trimmed);
+  }
+
   const tokens = input.split(/(\s+)/); // keep whitespace
   let wordIndex = 0;
   const totalWords = tokens.filter((t) => !/^\s+$/.test(t) && t.length > 0).length;
@@ -55,13 +62,33 @@ export function toAPATitleCase(input: string): string {
       const [, lead, core, trail] = m;
       if (!core) return tok;
 
-      const lower = core.toLowerCase();
-      const isMinor = APA_MINOR.has(lower);
+      // Whole-token override (e.g. "SUVs", "BMW")
+      const lowerToken = core.toLowerCase();
+      if (overrides.has(lowerToken)) {
+        return lead + overrides.get(lowerToken)! + trail;
+      }
+
+      // Per-segment override for hyphen/slash compounds (e.g. "Pre-Owned", "AC/DC")
+      if (/[-/]/.test(core)) {
+        const rebuilt = core
+          .split(/([-/])/)
+          .map((seg) => {
+            if (seg === "-" || seg === "/") return seg;
+            const segLower = seg.toLowerCase();
+            if (overrides.has(segLower)) return overrides.get(segLower)!;
+            if (!seg) return seg;
+            return seg.charAt(0).toUpperCase() + seg.slice(1).toLowerCase();
+          })
+          .join("");
+        return lead + rebuilt + trail;
+      }
+
+      const isMinor = APA_MINOR.has(lowerToken);
       const useCap = isFirst || isLast || forceCap || !isMinor || core.length >= 4;
 
       const cased = useCap
         ? core.charAt(0).toUpperCase() + core.slice(1).toLowerCase()
-        : lower;
+        : lowerToken;
 
       return lead + cased + trail;
     })
