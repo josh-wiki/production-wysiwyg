@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Editor from "react-simple-code-editor";
 // prismjs's default entry registers `markup` (HTML) — no extra component import needed,
 // and importing `prismjs/components/prism-markup` directly breaks SSR (expects global Prism).
@@ -20,10 +20,13 @@ import {
   Lock,
   MousePointerClick,
   Paintbrush,
+  Replace,
   RotateCcw,
   Scissors,
   SquareStack,
   Type,
+  Undo2,
+  Redo2,
   Unlock,
   Wand2,
 } from "lucide-react";
@@ -94,8 +97,60 @@ export const Route = createFileRoute("/")({
 
 type View = "visual" | "html" | "split";
 
+// ---------- History (undo/redo) ----------
+function useHistory<T>(initial: T, limit = 100) {
+  const [state, setState] = useState<T>(initial);
+  const past = useRef<T[]>([]);
+  const future = useRef<T[]>([]);
+  const isTimeTravel = useRef(false);
+
+  const set = useCallback((next: T | ((prev: T) => T)) => {
+    setState((prev) => {
+      const value = typeof next === "function" ? (next as (p: T) => T)(prev) : next;
+      if (Object.is(value, prev)) return prev;
+      if (!isTimeTravel.current) {
+        past.current.push(prev);
+        if (past.current.length > limit) past.current.shift();
+        future.current = [];
+      }
+      isTimeTravel.current = false;
+      return value;
+    });
+  }, [limit]);
+
+  const undo = useCallback(() => {
+    setState((prev) => {
+      if (past.current.length === 0) return prev;
+      const previous = past.current.pop()!;
+      future.current.push(prev);
+      isTimeTravel.current = true;
+      return previous;
+    });
+  }, []);
+
+  const redo = useCallback(() => {
+    setState((prev) => {
+      if (future.current.length === 0) return prev;
+      const next = future.current.pop()!;
+      past.current.push(prev);
+      isTimeTravel.current = true;
+      return next;
+    });
+  }, []);
+
+  // Replace value silently (used for localStorage hydration without polluting history)
+  const reset = useCallback((value: T) => {
+    past.current = [];
+    future.current = [];
+    isTimeTravel.current = true;
+    setState(value);
+  }, []);
+
+  return { state, set, undo, redo, reset };
+}
+
 function SandboxPage() {
-  const [html, setHtml] = useState(STARTER_HTML);
+  const { state: html, set: setHtml, undo, redo, reset: resetHtml } = useHistory<string>(STARTER_HTML);
   const [view, setView] = useState<View>("visual");
   const [editable, setEditable] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -103,6 +158,10 @@ function SandboxPage() {
   const [ctaColor, setCtaColor] = useState("#000000");
   const [snippets, setSnippets] = useState<Snippet[]>(DEFAULT_SNIPPETS);
   const [editSnippets, setEditSnippets] = useState(false);
+
+  // Track caret position in the HTML code editor for insert-at-cursor
+  const codeCaretRef = useRef<number | null>(null);
+  const codeTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     try {
@@ -134,10 +193,11 @@ function SandboxPage() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setHtml(saved);
+      if (saved) resetHtml(saved);
     } catch {
       /* noop */
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     try {
@@ -146,6 +206,29 @@ function SandboxPage() {
       /* noop */
     }
   }, [html]);
+
+  // Global keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const mod = e.metaKey || e.ctrlKey;
+      if (!mod) return;
+      const key = e.key.toLowerCase();
+      if (key === "z" && !e.shiftKey) {
+        // Let the native textarea handle its own undo when it's focused
+        const t = e.target as HTMLElement | null;
+        if (t && (t.tagName === "TEXTAREA" || t.tagName === "INPUT" || t.isContentEditable)) return;
+        e.preventDefault();
+        undo();
+      } else if ((key === "z" && e.shiftKey) || key === "y") {
+        const t = e.target as HTMLElement | null;
+        if (t && (t.tagName === "TEXTAREA" || t.tagName === "INPUT" || t.isContentEditable)) return;
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [undo, redo]);
 
   const handleCopy = async () => {
     try {
@@ -178,7 +261,44 @@ function SandboxPage() {
   };
 
   const insertSnippet = (snippet: string) => {
+    // Insert at the code editor caret when we have one and the code editor is visible
+    const pos = codeCaretRef.current;
+    const codeVisible = view === "html" || view === "split";
+    if (codeVisible && pos !== null) {
+      setHtml((prev) => {
+        const safe = Math.max(0, Math.min(pos, prev.length));
+        return prev.slice(0, safe) + snippet + prev.slice(safe);
+      });
+      // Move caret to end of inserted snippet
+      const newPos = (pos ?? 0) + snippet.length;
+      codeCaretRef.current = newPos;
+      requestAnimationFrame(() => {
+        const ta = codeTextareaRef.current;
+        if (ta) {
+          ta.focus();
+          try {
+            ta.setSelectionRange(newPos, newPos);
+          } catch {
+            /* noop */
+          }
+        }
+      });
+      return;
+    }
     setHtml((prev) => (prev.trim() ? `${prev}\n${snippet}` : snippet));
+  };
+
+  // Compute [replace] token count for badge
+  const replaceCount = useMemo(() => (html.match(/\[replace\]/g) || []).length, [html]);
+
+  const applyReplacements = (values: string[]) => {
+    setHtml((prev) => {
+      let i = 0;
+      return prev.replace(/\[replace\]/g, () => {
+        const v = values[i++];
+        return v != null && v !== "" ? v : "[replace]";
+      });
+    });
   };
 
   return (
@@ -195,6 +315,26 @@ function SandboxPage() {
           <p className="text-xs text-muted-foreground">
             Visual + color-coded HTML editor with handy text utilities.
           </p>
+        </div>
+        <div className="ml-auto flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={undo}
+            title="Undo (Ctrl/Cmd+Z)"
+            className="h-8 px-2"
+          >
+            <Undo2 className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={redo}
+            title="Redo (Ctrl/Cmd+Shift+Z)"
+            className="h-8 px-2"
+          >
+            <Redo2 className="h-3.5 w-3.5" />
+          </Button>
         </div>
       </header>
 
@@ -253,6 +393,14 @@ function SandboxPage() {
       </CollapsibleSection>
 
       <CollapsibleSection
+        title={`Fill [replace] tokens${replaceCount ? ` (${replaceCount})` : ""}`}
+        icon={<Replace className="h-3.5 w-3.5" />}
+        defaultOpen={replaceCount > 0}
+      >
+        <ReplaceTokens count={replaceCount} onApply={applyReplacements} />
+      </CollapsibleSection>
+
+      <CollapsibleSection
         title="Insert snippets"
         icon={<SquareStack className="h-3.5 w-3.5" />}
         defaultOpen
@@ -265,7 +413,7 @@ function SandboxPage() {
               size="sm"
               className="h-8"
               onClick={() => insertSnippet(s.html)}
-              title={`Insert ${s.label} snippet`}
+              title={`Insert ${s.label} snippet at cursor`}
             >
               {s.label}
             </Button>
@@ -304,6 +452,9 @@ function SandboxPage() {
             <Pencil className="mr-1.5 h-3.5 w-3.5" />
             {editSnippets ? "Done" : "Edit"}
           </Button>
+          <span className="ml-2 text-[11px] text-muted-foreground">
+            Inserts at cursor when HTML/Split view is active.
+          </span>
         </div>
         {editSnippets && (
           <div className="flex flex-col gap-2 border-t border-border bg-background/40 px-4 py-3">
@@ -398,11 +549,23 @@ function SandboxPage() {
         {view === "visual" ? (
           <VisualEditor html={html} editable={editable} onChange={setHtml} />
         ) : view === "html" ? (
-          <CodeEditor html={html} editable={editable} onChange={setHtml} />
+          <CodeEditor
+            html={html}
+            editable={editable}
+            onChange={setHtml}
+            caretRef={codeCaretRef}
+            textareaRef={codeTextareaRef}
+          />
         ) : (
           <div className="grid h-full gap-4 lg:grid-cols-2">
             <VisualEditor html={html} editable={editable} onChange={setHtml} />
-            <CodeEditor html={html} editable={editable} onChange={setHtml} />
+            <CodeEditor
+              html={html}
+              editable={editable}
+              onChange={setHtml}
+              caretRef={codeCaretRef}
+              textareaRef={codeTextareaRef}
+            />
           </div>
         )}
       </main>
@@ -440,6 +603,72 @@ function DomainStripper({
       <span className="text-[11px] text-muted-foreground">
         Removes the domain (with optional <code>https://</code> and <code>www.</code>) from URLs in the HTML.
       </span>
+    </div>
+  );
+}
+
+function ReplaceTokens({
+  count,
+  onApply,
+}: {
+  count: number;
+  onApply: (values: string[]) => void;
+}) {
+  const [values, setValues] = useState<string[]>([]);
+
+  // Resize values array to match token count
+  useEffect(() => {
+    setValues((prev) => {
+      if (prev.length === count) return prev;
+      const next = prev.slice(0, count);
+      while (next.length < count) next.push("");
+      return next;
+    });
+  }, [count]);
+
+  if (count === 0) {
+    return (
+      <div className="px-4 py-2.5 text-[11px] text-muted-foreground">
+        No <code>[replace]</code> tokens in the HTML yet. Insert a snippet to add some.
+      </div>
+    );
+  }
+
+  const apply = () => {
+    onApply(values);
+    setValues((vs) => vs.map(() => ""));
+  };
+
+  return (
+    <div className="flex flex-col gap-2 px-4 py-2.5">
+      <div className="grid gap-2 sm:grid-cols-2">
+        {values.map((v, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded bg-primary/15 text-[10px] font-semibold text-primary">
+              {i + 1}
+            </span>
+            <Input
+              value={v}
+              onChange={(e) =>
+                setValues((vs) => vs.map((x, idx) => (idx === i ? e.target.value : x)))
+              }
+              placeholder={`Replacement #${i + 1}`}
+              className="h-8 text-xs"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") apply();
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button size="sm" variant="outline" className="h-8" onClick={apply}>
+          <Replace className="mr-1.5 h-3.5 w-3.5" /> Fill tokens
+        </Button>
+        <span className="text-[11px] text-muted-foreground">
+          Empty inputs leave that <code>[replace]</code> in place.
+        </span>
+      </div>
     </div>
   );
 }
@@ -667,13 +896,39 @@ function CodeEditor({
   html,
   editable,
   onChange,
+  caretRef,
+  textareaRef,
 }: {
   html: string;
   editable: boolean;
   onChange: (v: string) => void;
+  caretRef?: React.MutableRefObject<number | null>;
+  textareaRef?: React.MutableRefObject<HTMLTextAreaElement | null>;
 }) {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Find the underlying textarea inside react-simple-code-editor and track caret
+  useEffect(() => {
+    const ta = wrapperRef.current?.querySelector("textarea") as HTMLTextAreaElement | null;
+    if (!ta) return;
+    if (textareaRef) textareaRef.current = ta;
+    const updateCaret = () => {
+      if (caretRef) caretRef.current = ta.selectionStart;
+    };
+    ta.addEventListener("keyup", updateCaret);
+    ta.addEventListener("click", updateCaret);
+    ta.addEventListener("focus", updateCaret);
+    ta.addEventListener("select", updateCaret);
+    return () => {
+      ta.removeEventListener("keyup", updateCaret);
+      ta.removeEventListener("click", updateCaret);
+      ta.removeEventListener("focus", updateCaret);
+      ta.removeEventListener("select", updateCaret);
+    };
+  }, [caretRef, textareaRef]);
+
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-[#0b1020] shadow-sm">
+    <div ref={wrapperRef} className="overflow-hidden rounded-lg border border-border bg-[#0b1020] shadow-sm">
       {!editable && (
         <div className="flex items-center gap-2 border-b border-border bg-secondary/40 px-3 py-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">
           <Lock className="h-3 w-3" /> Read-only
