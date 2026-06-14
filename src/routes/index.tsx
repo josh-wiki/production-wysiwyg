@@ -589,9 +589,6 @@ function TextTools() {
               </div>
             </div>
           )}
-          <div className="hidden">
-            {/* spacer to keep original structure below */}
-          </div>
           <div className="relative flex-1">
             {outputLabel && (
               <div className="absolute right-2 top-1 z-10 flex items-center gap-1">
