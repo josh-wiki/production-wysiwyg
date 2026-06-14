@@ -444,11 +444,38 @@ function DomainStripper({
   );
 }
 
+const APA_WORDS_KEY = "html-sandbox.apa-words.v1";
+const DEFAULT_APA_WORDS = ["SUVs", "Pre-Owned", "GMC", "BMW"];
+
 function TextTools() {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [outputLabel, setOutputLabel] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [editApa, setEditApa] = useState(false);
+  const [apaWords, setApaWords] = useState<string[]>(DEFAULT_APA_WORDS);
+
+  // Load persisted custom APA words
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(APA_WORDS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) setApaWords(parsed.filter((x) => typeof x === "string"));
+      }
+    } catch {
+      /* noop */
+    }
+  }, []);
+
+  // Persist custom APA words
+  useEffect(() => {
+    try {
+      localStorage.setItem(APA_WORDS_KEY, JSON.stringify(apaWords));
+    } catch {
+      /* noop */
+    }
+  }, [apaWords]);
 
   const stats = useMemo(() => countStats(input), [input]);
 
@@ -457,7 +484,7 @@ function TextTools() {
     setOutputLabel("Slug");
   };
   const runAPA = () => {
-    setOutput(toAPATitleCase(input));
+    setOutput(toAPATitleCase(input, apaWords));
     setOutputLabel("APA title case");
   };
   const runCounts = () => {
