@@ -400,35 +400,45 @@ function SandboxPage() {
             </Button>
           ))}
           <span className="mx-1 h-5 w-px bg-border" />
-          <div className="flex items-center gap-1.5">
-            <input
-              type="color"
-              value={ctaColor}
-              onChange={(e) => setCtaColor(e.target.value)}
-              className="h-7 w-8 cursor-pointer rounded border border-border bg-transparent p-0"
-              title="CTA background color"
-            />
-            <Input
-              value={ctaColor}
-              onChange={(e) => setCtaColor(e.target.value)}
-              className="h-8 w-24 px-2 font-mono text-xs"
-              placeholder="#000000"
-            />
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Background
+            </span>
+            <div className="flex items-center gap-1.5">
+              <input
+                type="color"
+                value={ctaColor}
+                onChange={(e) => setCtaColor(e.target.value)}
+                className="h-7 w-8 cursor-pointer rounded border border-border bg-transparent p-0"
+                title="CTA background color"
+              />
+              <Input
+                value={ctaColor}
+                onChange={(e) => setCtaColor(e.target.value)}
+                className="h-8 w-24 px-2 font-mono text-xs"
+                placeholder="#000000"
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <input
-              type="color"
-              value={ctaTextColor}
-              onChange={(e) => setCtaTextColor(e.target.value)}
-              className="h-7 w-8 cursor-pointer rounded border border-border bg-transparent p-0"
-              title="CTA text color"
-            />
-            <Input
-              value={ctaTextColor}
-              onChange={(e) => setCtaTextColor(e.target.value)}
-              className="h-8 w-24 px-2 font-mono text-xs"
-              placeholder="#ffffff"
-            />
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Text
+            </span>
+            <div className="flex items-center gap-1.5">
+              <input
+                type="color"
+                value={ctaTextColor}
+                onChange={(e) => setCtaTextColor(e.target.value)}
+                className="h-7 w-8 cursor-pointer rounded border border-border bg-transparent p-0"
+                title="CTA text color"
+              />
+              <Input
+                value={ctaTextColor}
+                onChange={(e) => setCtaTextColor(e.target.value)}
+                className="h-8 w-24 px-2 font-mono text-xs"
+                placeholder="#ffffff"
+              />
+            </div>
           </div>
           <Button
             variant="outline"
