@@ -506,30 +506,30 @@ function SandboxPage() {
       </CollapsibleSection>
 
       <div className="flex flex-wrap items-center gap-2 border-b border-border bg-card/20 px-4 py-2.5">
-        <span className="inline-flex items-center gap-1 rounded border border-primary/50 bg-primary/15 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-primary">
-          <FlaskConical className="h-3 w-3" /> Sandbox
-        </span>
-        <button
-          type="button"
-          onClick={() => setEditable((v) => !v)}
-          className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] uppercase tracking-wider transition-colors ${
-            editable
-              ? "border-primary/50 bg-primary/15 text-primary"
-              : "border-border bg-secondary/70 text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          {editable ? (
-            <>
-              <Unlock className="h-3 w-3" /> Editing
-            </>
-          ) : (
-            <>
-              <Lock className="h-3 w-3" /> Locked
-            </>
-          )}
-        </button>
-
-        <div className="ml-auto flex items-center gap-1">
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          <span className="inline-flex items-center gap-1 rounded border border-primary/50 bg-primary/15 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-primary">
+            <FlaskConical className="h-3 w-3" /> Sandbox
+          </span>
+          <button
+            type="button"
+            onClick={() => setEditable((v) => !v)}
+            className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] uppercase tracking-wider transition-colors ${
+              editable
+                ? "border-primary/50 bg-primary/15 text-primary"
+                : "border-border bg-secondary/70 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {editable ? (
+              <>
+                <Unlock className="h-3 w-3" /> Editing
+              </>
+            ) : (
+              <>
+                <Lock className="h-3 w-3" /> Locked
+              </>
+            )}
+          </button>
+          <span className="mx-1 h-5 w-px bg-border" />
           <Button
             variant="ghost"
             size="sm"
@@ -549,30 +549,29 @@ function SandboxPage() {
             <Redo2 className="h-3.5 w-3.5" />
           </Button>
           <span className="mx-1 h-5 w-px bg-border" />
+          <Tabs value={view} onValueChange={(v) => setView(v as View)}>
+            <TabsList className="bg-secondary">
+              <TabsTrigger
+                value="visual"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <MousePointerClick className="mr-1 h-3.5 w-3.5" /> Visual
+              </TabsTrigger>
+              <TabsTrigger
+                value="html"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <Code2 className="mr-1 h-3.5 w-3.5" /> HTML
+              </TabsTrigger>
+              <TabsTrigger
+                value="split"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                <Columns2 className="mr-1 h-3.5 w-3.5" /> Split
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
-
-        <Tabs value={view} onValueChange={(v) => setView(v as View)} className="ml-auto">
-          <TabsList className="bg-secondary">
-            <TabsTrigger
-              value="visual"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              <MousePointerClick className="mr-1 h-3.5 w-3.5" /> Visual
-            </TabsTrigger>
-            <TabsTrigger
-              value="html"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              <Code2 className="mr-1 h-3.5 w-3.5" /> HTML
-            </TabsTrigger>
-            <TabsTrigger
-              value="split"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              <Columns2 className="mr-1 h-3.5 w-3.5" /> Split
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
       </div>
 
       <main className="flex-1 overflow-auto bg-background p-4">
