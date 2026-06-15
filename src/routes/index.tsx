@@ -400,25 +400,42 @@ function SandboxPage() {
             </Button>
           ))}
           <span className="mx-1 h-5 w-px bg-border" />
-          <input
-            type="color"
-            value={ctaColor}
-            onChange={(e) => setCtaColor(e.target.value)}
-            className="h-7 w-8 cursor-pointer rounded border border-border bg-transparent p-0"
-            title="CTA button color"
-          />
-          <Input
-            value={ctaColor}
-            onChange={(e) => setCtaColor(e.target.value)}
-            className="h-8 w-24 px-2 font-mono text-xs"
-            placeholder="#000000"
-          />
+          <div className="flex items-center gap-1.5">
+            <input
+              type="color"
+              value={ctaColor}
+              onChange={(e) => setCtaColor(e.target.value)}
+              className="h-7 w-8 cursor-pointer rounded border border-border bg-transparent p-0"
+              title="CTA background color"
+            />
+            <Input
+              value={ctaColor}
+              onChange={(e) => setCtaColor(e.target.value)}
+              className="h-8 w-24 px-2 font-mono text-xs"
+              placeholder="#000000"
+            />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <input
+              type="color"
+              value={ctaTextColor}
+              onChange={(e) => setCtaTextColor(e.target.value)}
+              className="h-7 w-8 cursor-pointer rounded border border-border bg-transparent p-0"
+              title="CTA text color"
+            />
+            <Input
+              value={ctaTextColor}
+              onChange={(e) => setCtaTextColor(e.target.value)}
+              className="h-8 w-24 px-2 font-mono text-xs"
+              placeholder="#ffffff"
+            />
+          </div>
           <Button
             variant="outline"
             size="sm"
             className="h-8"
-            onClick={() => insertSnippet(ctaSnippet(ctaColor))}
-            title="Insert CTAs with chosen color"
+            onClick={() => insertSnippet(ctaSnippet(ctaColor, ctaTextColor))}
+            title="Insert CTAs with chosen colors"
           >
             CTAs
           </Button>
