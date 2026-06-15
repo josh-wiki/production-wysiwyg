@@ -71,8 +71,8 @@ const DEFAULT_SNIPPETS: Snippet[] = [
 
 const SNIPPETS_KEY = "html-sandbox.snippets.v1";
 
-const ctaSnippet = (bg: string) =>
-  `<div style="text-align: center; display: flex; flex-wrap: wrap; justify-content: center;"><a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">View Inventory</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">Financing</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: #ffffff; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">About Us</a></div>`;
+const ctaSnippet = (bg: string, text: string) =>
+  `<div style="text-align: center; display: flex; flex-wrap: wrap; justify-content: center;"><a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: ${text}; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">View Inventory</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: ${text}; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">Financing</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: ${text}; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">About Us</a></div>`;
 
 const STORAGE_KEY = "html-sandbox.v2";
 
