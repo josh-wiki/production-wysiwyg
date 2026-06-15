@@ -316,26 +316,6 @@ function SandboxPage() {
             Visual + color-coded HTML editor with handy text utilities.
           </p>
         </div>
-        <div className="ml-auto flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={undo}
-            title="Undo (Ctrl/Cmd+Z)"
-            className="h-8 px-2"
-          >
-            <Undo2 className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={redo}
-            title="Redo (Ctrl/Cmd+Shift+Z)"
-            className="h-8 px-2"
-          >
-            <Redo2 className="h-3.5 w-3.5" />
-          </Button>
-        </div>
       </header>
 
       <CollapsibleSection title="Clean & actions" icon={<Eraser className="h-3.5 w-3.5" />}>
