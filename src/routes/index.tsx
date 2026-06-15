@@ -156,6 +156,7 @@ function SandboxPage() {
   const [copied, setCopied] = useState(false);
   const [domain, setDomain] = useState("");
   const [ctaColor, setCtaColor] = useState("#000000");
+  const [ctaTextColor, setCtaTextColor] = useState("#ffffff");
   const [snippets, setSnippets] = useState<Snippet[]>(DEFAULT_SNIPPETS);
   const [editSnippets, setEditSnippets] = useState(false);
 
