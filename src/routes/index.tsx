@@ -319,51 +319,6 @@ function SandboxPage() {
         </div>
       </header>
 
-      <CollapsibleSection title="Clean & actions" icon={<Eraser className="h-3.5 w-3.5" />}>
-        <div className="flex flex-wrap items-center gap-2 px-4 py-2.5">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setHtml((prev) => stripInlineStyles(prev))}
-            title="Remove all inline style attributes"
-          >
-            <Paintbrush className="mr-1.5 h-3.5 w-3.5" /> Clean styles
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setHtml((prev) => stripSpans(prev))}
-            title="Unwrap all <span> tags"
-          >
-            <Eraser className="mr-1.5 h-3.5 w-3.5" /> Clean spans
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setHtml((prev) => cleanWhitespace(prev))}
-            title="Collapse blank lines and extra spaces"
-          >
-            <SquareStack className="mr-1.5 h-3.5 w-3.5" /> Clean spaces
-          </Button>
-          <Button variant="ghost" size="sm" onClick={handleReset}>
-            <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reset
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleDownload}>
-            <Download className="mr-1.5 h-3.5 w-3.5" /> .html
-          </Button>
-          <Button size="sm" onClick={handleCopy} className="min-w-[110px]">
-            {copied ? (
-              <>
-                <Check className="mr-1.5 h-3.5 w-3.5" /> Copied
-              </>
-            ) : (
-              <>
-                <Copy className="mr-1.5 h-3.5 w-3.5" /> Copy HTML
-              </>
-            )}
-          </Button>
-        </div>
-      </CollapsibleSection>
 
       <CollapsibleSection title="Strip domain" icon={<Scissors className="h-3.5 w-3.5" />}>
         <DomainStripper domain={domain} setDomain={setDomain} onStrip={handleStripDomain} />
