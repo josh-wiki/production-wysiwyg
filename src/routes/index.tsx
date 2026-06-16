@@ -461,6 +461,23 @@ function SandboxPage() {
       </CollapsibleSection>
 
       <div className="flex flex-wrap items-center gap-2 border-b border-border bg-card/20 px-4 py-2.5">
+        <Button variant="ghost" size="sm" onClick={handleReset} title="Clear sandbox">
+          <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reset
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleDownload} title="Download .html">
+          <Download className="mr-1.5 h-3.5 w-3.5" /> .html
+        </Button>
+        <Button size="sm" onClick={handleCopy} className="min-w-[110px]" title="Copy HTML to clipboard">
+          {copied ? (
+            <>
+              <Check className="mr-1.5 h-3.5 w-3.5" /> Copied
+            </>
+          ) : (
+            <>
+              <Copy className="mr-1.5 h-3.5 w-3.5" /> Copy HTML
+            </>
+          )}
+        </Button>
         <div className="ml-auto flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-1 rounded border border-primary/50 bg-primary/15 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-primary">
             <FlaskConical className="h-3 w-3" /> Sandbox
