@@ -320,7 +320,7 @@ function SandboxPage() {
       </header>
 
 
-      <CollapsibleSection title="Strip domain" icon={<Scissors className="h-3.5 w-3.5" />}>
+      <CollapsibleSection title="Strip domain from titles" icon={<Scissors className="h-3.5 w-3.5" />}>
         <DomainStripper domain={domain} setDomain={setDomain} onStrip={handleStripDomain} />
       </CollapsibleSection>
 
