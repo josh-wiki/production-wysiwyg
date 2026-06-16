@@ -587,7 +587,7 @@ function DomainStripper({
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-border bg-card/30 px-4 py-2">
       <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-        <Scissors className="h-3.5 w-3.5" /> Strip domain
+        <Scissors className="h-3.5 w-3.5" /> Strip domain from titles
       </span>
       <Input
         value={domain}
