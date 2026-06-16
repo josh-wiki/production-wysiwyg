@@ -111,7 +111,12 @@ export function stripDomain(html: string, domain: string): string {
 
   // Match optional protocol, optional www., then the domain (with trailing slash only if user included it)
   const re = new RegExp(`(?:https?:\\/\\/)?(?:www\\.)?${safe}${slash}`, "gi");
-  return html.replace(re, "");
+
+  // Only replace in text content — skip inside HTML tags/attributes
+  const parts = html.split(/(<[^>]*>)/);
+  return parts
+    .map((part) => (part.startsWith("<") ? part : part.replace(re, "")))
+    .join("");
 }
 
 // Remove all inline style="..." attributes from HTML
