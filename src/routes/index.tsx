@@ -326,8 +326,10 @@ function SandboxPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setHtml((prev) => stripDirLtr(stripInlineStyles(prev)))}
-            title='Remove inline styles and dir="ltr" from paragraphs and headings'
+            onClick={() =>
+              setHtml((prev) => stripListAttrs(stripDirLtr(stripInlineStyles(prev))))
+            }
+            title='Remove inline styles and dir="ltr" from paragraphs/headings, plus role="presentation", dir="ltr", and aria-level="1" from lists'
           >
             <Paintbrush className="mr-1.5 h-3.5 w-3.5" /> Clean styles
           </Button>
