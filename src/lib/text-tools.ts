@@ -147,3 +147,11 @@ export function cleanWhitespace(html: string): string {
     .trim();
 }
 
+// Remove dir="ltr" from paragraph and heading tags (common Google Docs paste artifact)
+export function stripDirLtr(html: string): string {
+  return html.replace(
+    /<(p|h[1-6])\b[^>]*?\sdir=["']ltr["'][^>]*>/gi,
+    (match) => match.replace(/\sdir=["']ltr["']/i, "")
+  );
+}
+
