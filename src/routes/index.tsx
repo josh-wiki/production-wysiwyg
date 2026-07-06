@@ -46,6 +46,7 @@ import {
   stripDirLtr,
   stripDomain,
   stripInlineStyles,
+  stripListAttrs,
   stripSpans,
   toAPATitleCase,
 } from "@/lib/text-tools";
