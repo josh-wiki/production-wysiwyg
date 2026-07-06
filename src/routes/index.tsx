@@ -43,6 +43,7 @@ import {
   cleanWhitespace,
   countStats,
   slugify,
+  stripDirLtr,
   stripDomain,
   stripInlineStyles,
   stripSpans,
