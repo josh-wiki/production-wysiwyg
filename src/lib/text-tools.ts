@@ -155,3 +155,16 @@ export function stripDirLtr(html: string): string {
   );
 }
 
+// Remove role="presentation", dir="ltr", and aria-level="1" from list tags
+// (common Google Docs paste artifact on <ul>, <ol>, and <li>)
+export function stripListAttrs(html: string): string {
+  return html.replace(
+    /<(ul|ol|li)\b[^>]*>/gi,
+    (match) =>
+      match
+        .replace(/\srole=["']presentation["']/gi, "")
+        .replace(/\sdir=["']ltr["']/gi, "")
+        .replace(/\saria-level=["']1["']/gi, "")
+  );
+}
+
