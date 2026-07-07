@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/collapsible";
 import {
   cleanWhitespace,
+  convertSuperscriptSpans,
   countStats,
   slugify,
   stripDirLtr,
@@ -328,10 +329,16 @@ function SandboxPage() {
             size="sm"
             onClick={() =>
               setHtml((prev) =>
-                cleanWhitespace(stripSpans(stripListAttrs(stripDirLtr(stripInlineStyles(prev)))))
+                cleanWhitespace(
+                  stripSpans(
+                    stripListAttrs(
+                      stripDirLtr(stripInlineStyles(convertSuperscriptSpans(prev)))
+                    )
+                  )
+                )
               )
             }
-            title='Clean everything: inline styles, dir="ltr", role="presentation" from paragraphs/headings/lists, unwrap spans, and collapse whitespace'
+            title='Clean everything: inline styles, dir="ltr", role="presentation" from paragraphs/headings/lists, convert superscript spans to <sup>, unwrap spans, and collapse whitespace'
           >
             <Eraser className="mr-1.5 h-3.5 w-3.5" /> Clean
           </Button>
