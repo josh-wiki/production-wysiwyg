@@ -172,3 +172,20 @@ export function stripListAttrs(html: string): string {
   );
 }
 
+// Convert Google Docs-style superscript spans to semantic <sup> tags
+// Matches <span style="font-size:0.6em;vertical-align:super;">...</span>
+export function convertSuperscriptSpans(html: string): string {
+  return html.replace(
+    /<span\b([^>]*?)style=["']([^"']*)["']([^>]*)>(.*?)<\/span\s*>/gi,
+    (match, _beforeStyle, styleValue, _afterStyle, content) => {
+      if (
+        /font-size\s*:\s*0\.6(?:0*)em/i.test(styleValue) &&
+        /vertical-align\s*:\s*super/i.test(styleValue)
+      ) {
+        return `<sup>${content}</sup>`;
+      }
+      return match;
+    }
+  );
+}
+
