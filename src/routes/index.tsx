@@ -327,27 +327,13 @@ function SandboxPage() {
             variant="ghost"
             size="sm"
             onClick={() =>
-              setHtml((prev) => stripListAttrs(stripDirLtr(stripInlineStyles(prev))))
+              setHtml((prev) =>
+                cleanWhitespace(stripSpans(stripListAttrs(stripDirLtr(stripInlineStyles(prev)))))
+              )
             }
-            title='Remove inline styles, dir="ltr", and role="presentation" from paragraphs/headings, plus role="presentation", dir="ltr", and aria-level="1" from lists'
+            title='Clean everything: inline styles, dir="ltr", role="presentation" from paragraphs/headings/lists, unwrap spans, and collapse whitespace'
           >
-            <Paintbrush className="mr-1.5 h-3.5 w-3.5" /> Clean styles
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setHtml((prev) => stripSpans(prev))}
-            title="Unwrap all <span> tags"
-          >
-            <Eraser className="mr-1.5 h-3.5 w-3.5" /> Clean spans
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setHtml((prev) => cleanWhitespace(prev))}
-            title="Collapse blank lines and extra spaces"
-          >
-            <SquareStack className="mr-1.5 h-3.5 w-3.5" /> Clean spaces
+            <Eraser className="mr-1.5 h-3.5 w-3.5" /> Clean
           </Button>
           <Button variant="ghost" size="sm" onClick={handleReset}>
             <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reset
