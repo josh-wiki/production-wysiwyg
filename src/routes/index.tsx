@@ -46,11 +46,13 @@ import {
   slugify,
   stripDirLtr,
   stripDomain,
+  stripExtraBreaks,
   stripInlineStyles,
   stripListAttrs,
   stripSpans,
   toAPATitleCase,
 } from "@/lib/text-tools";
+
 
 
 const STARTER_HTML = "";
@@ -330,18 +332,21 @@ function SandboxPage() {
             onClick={() =>
               setHtml((prev) =>
                 cleanWhitespace(
-                  stripSpans(
-                    stripListAttrs(
-                      stripDirLtr(stripInlineStyles(convertSuperscriptSpans(prev)))
+                  stripExtraBreaks(
+                    stripSpans(
+                      stripListAttrs(
+                        stripDirLtr(stripInlineStyles(convertSuperscriptSpans(prev)))
+                      )
                     )
                   )
                 )
               )
             }
-            title='Clean everything: inline styles, dir="ltr", role="presentation" from paragraphs/headings/lists, convert superscript spans to <sup>, unwrap spans, and collapse whitespace'
+            title='Clean everything: inline styles, dir="ltr", role="presentation" from paragraphs/headings/lists, convert superscript spans to <sup>, unwrap spans, collapse extra <br> tags, and collapse whitespace'
           >
             <Eraser className="mr-1.5 h-3.5 w-3.5" /> Clean
           </Button>
+
           <Button variant="ghost" size="sm" onClick={handleReset}>
             <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reset
           </Button>
