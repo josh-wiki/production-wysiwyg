@@ -966,8 +966,8 @@ function CodeEditor({
         highlight={(code) => {
           const highlighted = Prism.highlight(code, Prism.languages.markup, "markup");
           return highlighted.replace(
-            /\[replace\]/g,
-            '<span class="replace-token">[replace]</span>',
+            /\[replace\]/gi,
+            (match) => `<span class="replace-token">${match}</span>`,
           );
         }}
         padding={16}
