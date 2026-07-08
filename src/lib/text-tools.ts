@@ -189,3 +189,12 @@ export function convertSuperscriptSpans(html: string): string {
   );
 }
 
+// Collapse consecutive <br> tags and remove leading/trailing ones
+export function stripExtraBreaks(html: string): string {
+  return html
+    .replace(/(<br\s*\/?>)[\s\n]*(\r?\n)?[\s\n]*(<br\s*\/?>)/gi, "$1") // consecutive <br>
+    .replace(/^[\s\n]*<br\s*\/?>[\s\n]*/i, "") // leading <br>
+    .replace(/[\s\n]*<br\s*\/?>[\s\n]*$/i, ""); // trailing <br>
+}
+
+
