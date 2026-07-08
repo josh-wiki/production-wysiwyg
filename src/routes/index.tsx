@@ -818,19 +818,19 @@ function TextTools() {
           {editApa && (
             <div className="rounded border border-border bg-background/60 p-2">
               <label className="mb-1 block text-[11px] font-medium text-muted-foreground">
-                Always-capitalized words (/ separated). Casing here is preserved exactly — e.g. SUVs / Pre-Owned / GMC / BMW.
+                Always-capitalized words (comma separated). Casing here is preserved exactly — e.g. /, MA/, NH/.
               </label>
               <Textarea
-                value={apaWords.join(" / ")}
+                value={apaWords.join(", ")}
                 onChange={(e) =>
                   setApaWords(
                     e.target.value
-                      .split(/[\/\n]/)
+                      .split(/[\n,]/)
                       .map((s) => s.trim())
                       .filter(Boolean),
                   )
                 }
-                placeholder="SUVs / Pre-Owned / GMC / BMW"
+                placeholder="/, MA/, NH/"
                 className="min-h-[60px] text-xs"
               />
               <div className="mt-1 flex justify-end">
