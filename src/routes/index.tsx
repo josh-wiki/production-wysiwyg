@@ -168,6 +168,8 @@ function SandboxPage() {
   const [ctaTextColor, setCtaTextColor] = useState("#ffffff");
   const [snippets, setSnippets] = useState<Snippet[]>(DEFAULT_SNIPPETS);
   const [editSnippets, setEditSnippets] = useState(false);
+  const [sessions, setSessions] = useState<SavedSession[]>([]);
+  const [sessionName, setSessionName] = useState("");
 
   // Track caret position in the HTML code editor for insert-at-cursor
   const codeCaretRef = useRef<number | null>(null);
