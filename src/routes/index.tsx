@@ -88,16 +88,16 @@ const STORAGE_KEY = "html-sandbox.v2";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "HTML Sandbox — Visual & code editor with text tools" },
+      { title: "Production Tool" },
       {
         name: "description",
         content:
           "A focused HTML sandbox: visual editor, color-coded code view, domain stripper, slugify, word counter, and APA title case.",
       },
-      { property: "og:title", content: "HTML Sandbox" },
+      { property: "og:title", content: "Production Tool" },
       {
         property: "og:description",
-        content: "Visual + color-coded HTML editor with domain stripper, slugify, word counter, and APA title case.",
+        content: "A focused HTML sandbox: visual editor, color-coded code view, domain stripper, slugify, word counter, and APA title case.",
       },
     ],
   }),
