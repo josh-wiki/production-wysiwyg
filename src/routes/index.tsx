@@ -42,6 +42,7 @@ import {
 } from "@/components/ui/collapsible";
 import {
   cleanWhitespace,
+  formatBlockHtml,
   convertSuperscriptSpans,
   countStats,
   slugify,
