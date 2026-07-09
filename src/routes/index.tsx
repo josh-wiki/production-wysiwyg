@@ -410,6 +410,55 @@ function SandboxPage() {
         </div>
       </CollapsibleSection>
 
+      <CollapsibleSection title="Sessions" icon={<Save className="h-3.5 w-3.5" />}>
+        <div className="flex flex-col gap-2 px-4 py-2.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <Input
+              value={sessionName}
+              onChange={(e) => setSessionName(e.target.value)}
+              placeholder="Session name…"
+              className="h-8 max-w-xs"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") saveSession();
+              }}
+            />
+            <Button size="sm" variant="outline" className="h-8" onClick={saveSession} disabled={!sessionName.trim()}>
+              <Save className="mr-1.5 h-3.5 w-3.5" /> Save current
+            </Button>
+          </div>
+          {sessions.length === 0 ? (
+            <p className="text-[11px] text-muted-foreground">No saved sessions yet. Name the current sandbox and save it.</p>
+          ) : (
+            <div className="flex flex-wrap items-center gap-2">
+              {sessions.map((s) => (
+                <div
+                  key={s.name}
+                  className="flex items-center gap-1 rounded border border-border bg-card/40 px-2 py-1"
+                >
+                  <button
+                    type="button"
+                    onClick={() => loadSession(s)}
+                    className="text-xs hover:text-primary"
+                    title={`Saved ${new Date(s.savedAt).toLocaleString()}`}
+                  >
+                    {s.name}
+                  </button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-5 w-5 p-0 text-destructive hover:text-destructive"
+                    onClick={() => deleteSession(s.name)}
+                    title="Delete session"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </CollapsibleSection>
+
       <CollapsibleSection title="Strip domain" icon={<Scissors className="h-3.5 w-3.5" />}>
         <DomainStripper domain={domain} setDomain={setDomain} onStrip={handleStripDomain} />
       </CollapsibleSection>
