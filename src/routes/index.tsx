@@ -217,6 +217,27 @@ function SandboxPage() {
     if (confirm("Reset snippets to defaults?")) setSnippets(DEFAULT_SNIPPETS);
   };
 
+  // Save current sandbox as a named session
+  const saveSession = () => {
+    const name = sessionName.trim();
+    if (!name) return;
+    setSessions((prev) => {
+      const filtered = prev.filter((s) => s.name !== name);
+      return [...filtered, { name, html, savedAt: new Date().toISOString() }].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+    });
+    setSessionName("");
+  };
+  const loadSession = (session: SavedSession) => {
+    if (confirm(`Load session "${session.name}"? Unsaved current work will be lost.`)) {
+      setHtml(session.html);
+    }
+  };
+  const deleteSession = (name: string) => {
+    setSessions((prev) => prev.filter((s) => s.name !== name));
+  };
+
   // Load/save to localStorage
   useEffect(() => {
     try {
