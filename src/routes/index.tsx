@@ -22,6 +22,7 @@ import {
   Paintbrush,
   Replace,
   RotateCcw,
+  Save,
   Scissors,
   SquareStack,
   Type,
