@@ -375,11 +375,13 @@ function SandboxPage() {
             size="sm"
             onClick={() =>
               setHtml((prev) =>
-                cleanWhitespace(
-                  stripExtraBreaks(
-                    stripSpans(
-                      stripListAttrs(
-                        stripDirLtr(stripInlineStyles(convertSuperscriptSpans(prev)))
+                formatBlockHtml(
+                  cleanWhitespace(
+                    stripExtraBreaks(
+                      stripSpans(
+                        stripListAttrs(
+                          stripDirLtr(stripInlineStyles(convertSuperscriptSpans(prev)))
+                        )
                       )
                     )
                   )
