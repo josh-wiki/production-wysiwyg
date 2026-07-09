@@ -172,6 +172,38 @@ export function stripListAttrs(html: string): string {
   );
 }
 
+// Put each block-level tag on its own line so cleaned HTML is easier to scan
+// and edit. Inline tags (a, strong, em, span, sup, sub, code, br, ...) stay
+// on the same line as their surrounding text.
+const BLOCK_TAGS = [
+  "h1", "h2", "h3", "h4", "h5", "h6",
+  "p",
+  "ul", "ol", "li",
+  "img", "figure", "figcaption", "video", "iframe",
+  "blockquote", "pre", "hr",
+  "table", "thead", "tbody", "tr", "th", "td",
+  "section", "article", "div",
+];
+
+export function formatBlockHtml(html: string): string {
+  const group = BLOCK_TAGS.join("|");
+  const openOrVoid = new RegExp(`(<(?:${group})\\b[^>]*>)`, "gi");
+  const close = new RegExp(`(</(?:${group})\\s*>)`, "gi");
+
+  let out = html
+    .replace(openOrVoid, "\n$1")
+    .replace(close, "$1\n");
+
+  // Collapse runs of blank lines / trailing spaces per line, trim ends.
+  out = out
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n[ \t]+/g, "\n")
+    .replace(/\n{2,}/g, "\n")
+    .replace(/^\s+|\s+$/g, "");
+
+  return out;
+}
+
 // Convert Google Docs-style superscript spans to semantic <sup> tags
 // Matches <span style="font-size:0.6em;vertical-align:super;">...</span>
 export function convertSuperscriptSpans(html: string): string {
