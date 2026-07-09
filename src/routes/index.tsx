@@ -191,6 +191,22 @@ function SandboxPage() {
     }
   }, [snippets]);
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(SESSIONS_KEY);
+      if (saved) setSessions(JSON.parse(saved));
+    } catch {
+      /* noop */
+    }
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+    } catch {
+      /* noop */
+    }
+  }, [sessions]);
+
   const updateSnippet = (i: number, patch: Partial<Snippet>) =>
     setSnippets((arr) => arr.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
   const deleteSnippet = (i: number) =>
