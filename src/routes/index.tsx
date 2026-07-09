@@ -76,6 +76,9 @@ const DEFAULT_SNIPPETS: Snippet[] = [
 ];
 
 const SNIPPETS_KEY = "html-sandbox.snippets.v1";
+const SESSIONS_KEY = "html-sandbox.sessions.v1";
+
+type SavedSession = { name: string; html: string; savedAt: string };
 
 const ctaSnippet = (bg: string, text: string) =>
   `<div style="text-align: center; display: flex; flex-wrap: wrap; justify-content: center;"><a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: ${text}; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">View Inventory</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: ${text}; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">Financing</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: ${text}; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">About Us</a></div>`;
