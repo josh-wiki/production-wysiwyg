@@ -22,6 +22,7 @@ import {
   Paintbrush,
   Replace,
   RotateCcw,
+  Save,
   Scissors,
   SquareStack,
   Type,
@@ -75,6 +76,9 @@ const DEFAULT_SNIPPETS: Snippet[] = [
 ];
 
 const SNIPPETS_KEY = "html-sandbox.snippets.v1";
+const SESSIONS_KEY = "html-sandbox.sessions.v1";
+
+type SavedSession = { name: string; html: string; savedAt: string };
 
 const ctaSnippet = (bg: string, text: string) =>
   `<div style="text-align: center; display: flex; flex-wrap: wrap; justify-content: center;"><a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: ${text}; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">View Inventory</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: ${text}; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">Financing</a> <a class="btn btn-primary" href="[replace]" style="text-decoration: none; border: none; box-shadow: none; margin: 10px; color: ${text}; background-color: ${bg}; min-width: fit-content; padding: 10px 20px; flex: 1 1 auto;">About Us</a></div>`;
@@ -164,6 +168,8 @@ function SandboxPage() {
   const [ctaTextColor, setCtaTextColor] = useState("#ffffff");
   const [snippets, setSnippets] = useState<Snippet[]>(DEFAULT_SNIPPETS);
   const [editSnippets, setEditSnippets] = useState(false);
+  const [sessions, setSessions] = useState<SavedSession[]>([]);
+  const [sessionName, setSessionName] = useState("");
 
   // Track caret position in the HTML code editor for insert-at-cursor
   const codeCaretRef = useRef<number | null>(null);
@@ -185,6 +191,22 @@ function SandboxPage() {
     }
   }, [snippets]);
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(SESSIONS_KEY);
+      if (saved) setSessions(JSON.parse(saved));
+    } catch {
+      /* noop */
+    }
+  }, []);
+  useEffect(() => {
+    try {
+      localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+    } catch {
+      /* noop */
+    }
+  }, [sessions]);
+
   const updateSnippet = (i: number, patch: Partial<Snippet>) =>
     setSnippets((arr) => arr.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
   const deleteSnippet = (i: number) =>
@@ -193,6 +215,27 @@ function SandboxPage() {
     setSnippets((arr) => [...arr, { label: "New", html: "" }]);
   const resetSnippets = () => {
     if (confirm("Reset snippets to defaults?")) setSnippets(DEFAULT_SNIPPETS);
+  };
+
+  // Save current sandbox as a named session
+  const saveSession = () => {
+    const name = sessionName.trim();
+    if (!name) return;
+    setSessions((prev) => {
+      const filtered = prev.filter((s) => s.name !== name);
+      return [...filtered, { name, html, savedAt: new Date().toISOString() }].sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+    });
+    setSessionName("");
+  };
+  const loadSession = (session: SavedSession) => {
+    if (confirm(`Load session "${session.name}"? Unsaved current work will be lost.`)) {
+      setHtml(session.html);
+    }
+  };
+  const deleteSession = (name: string) => {
+    setSessions((prev) => prev.filter((s) => s.name !== name));
   };
 
   // Load/save to localStorage
@@ -364,6 +407,55 @@ function SandboxPage() {
               </>
             )}
           </Button>
+        </div>
+      </CollapsibleSection>
+
+      <CollapsibleSection title="Sessions" icon={<Save className="h-3.5 w-3.5" />}>
+        <div className="flex flex-col gap-2 px-4 py-2.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <Input
+              value={sessionName}
+              onChange={(e) => setSessionName(e.target.value)}
+              placeholder="Session name…"
+              className="h-8 max-w-xs"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") saveSession();
+              }}
+            />
+            <Button size="sm" variant="outline" className="h-8" onClick={saveSession} disabled={!sessionName.trim()}>
+              <Save className="mr-1.5 h-3.5 w-3.5" /> Save current
+            </Button>
+          </div>
+          {sessions.length === 0 ? (
+            <p className="text-[11px] text-muted-foreground">No saved sessions yet. Name the current sandbox and save it.</p>
+          ) : (
+            <div className="flex flex-wrap items-center gap-2">
+              {sessions.map((s) => (
+                <div
+                  key={s.name}
+                  className="flex items-center gap-1 rounded border border-border bg-card/40 px-2 py-1"
+                >
+                  <button
+                    type="button"
+                    onClick={() => loadSession(s)}
+                    className="text-xs hover:text-primary"
+                    title={`Saved ${new Date(s.savedAt).toLocaleString()}`}
+                  >
+                    {s.name}
+                  </button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-5 w-5 p-0 text-destructive hover:text-destructive"
+                    onClick={() => deleteSession(s.name)}
+                    title="Delete session"
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </CollapsibleSection>
 
