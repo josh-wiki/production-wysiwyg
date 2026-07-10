@@ -54,12 +54,13 @@ import {
   stripSpans,
   toAPATitleCase,
 } from "@/lib/text-tools";
+import { supabase } from "@/integrations/supabase/client";
 
 
 
 const STARTER_HTML = "";
 
-type Snippet = { label: string; html: string };
+type Snippet = { id?: string; label: string; html: string; position?: number };
 
 const DEFAULT_SNIPPETS: Snippet[] = [
   {
@@ -76,7 +77,6 @@ const DEFAULT_SNIPPETS: Snippet[] = [
   },
 ];
 
-const SNIPPETS_KEY = "html-sandbox.snippets.v1";
 const SESSIONS_KEY = "html-sandbox.sessions.v1";
 
 type SavedSession = { name: string; html: string; savedAt: string };
@@ -176,21 +176,49 @@ function SandboxPage() {
   const codeCaretRef = useRef<number | null>(null);
   const codeTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(SNIPPETS_KEY);
-      if (saved) setSnippets(JSON.parse(saved));
-    } catch {
-      /* noop */
+  // Load shared snippets from backend + realtime sync
+  const loadSnippets = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("snippets")
+      .select("id, label, html, position")
+      .order("position", { ascending: true })
+      .order("updated_at", { ascending: true });
+    if (error) {
+      console.error("Failed to load snippets:", error);
+      return;
     }
+    if (!data || data.length === 0) {
+      // Seed defaults once so the shared library isn't empty for first visitor
+      const seed = DEFAULT_SNIPPETS.map((s, i) => ({ ...s, position: i }));
+      const { data: inserted, error: seedErr } = await supabase
+        .from("snippets")
+        .insert(seed)
+        .select("id, label, html, position");
+      if (seedErr) {
+        console.error("Failed to seed snippets:", seedErr);
+        setSnippets(DEFAULT_SNIPPETS);
+        return;
+      }
+      setSnippets(inserted ?? DEFAULT_SNIPPETS);
+      return;
+    }
+    setSnippets(data);
   }, []);
+
   useEffect(() => {
-    try {
-      localStorage.setItem(SNIPPETS_KEY, JSON.stringify(snippets));
-    } catch {
-      /* noop */
-    }
-  }, [snippets]);
+    loadSnippets();
+    const channel = supabase
+      .channel("snippets-shared")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "snippets" },
+        () => loadSnippets(),
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loadSnippets]);
 
   useEffect(() => {
     try {
@@ -208,15 +236,64 @@ function SandboxPage() {
     }
   }, [sessions]);
 
-  const updateSnippet = (i: number, patch: Partial<Snippet>) =>
+  const updateSnippet = (i: number, patch: Partial<Snippet>) => {
+    const target = snippets[i];
     setSnippets((arr) => arr.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
-  const deleteSnippet = (i: number) =>
-    setSnippets((arr) => arr.filter((_, idx) => idx !== i));
-  const addSnippet = () =>
-    setSnippets((arr) => [...arr, { label: "New", html: "" }]);
-  const resetSnippets = () => {
-    if (confirm("Reset snippets to defaults?")) setSnippets(DEFAULT_SNIPPETS);
+    if (target?.id) {
+      supabase
+        .from("snippets")
+        .update({ ...patch, updated_at: new Date().toISOString() })
+        .eq("id", target.id)
+        .then(({ error }) => {
+          if (error) console.error("Failed to update snippet:", error);
+        });
+    }
   };
+  const deleteSnippet = (i: number) => {
+    const target = snippets[i];
+    setSnippets((arr) => arr.filter((_, idx) => idx !== i));
+    if (target?.id) {
+      supabase
+        .from("snippets")
+        .delete()
+        .eq("id", target.id)
+        .then(({ error }) => {
+          if (error) console.error("Failed to delete snippet:", error);
+        });
+    }
+  };
+  const addSnippet = async () => {
+    const nextPos = snippets.length;
+    const { data, error } = await supabase
+      .from("snippets")
+      .insert({ label: "New", html: "", position: nextPos })
+      .select("id, label, html, position")
+      .single();
+    if (error) {
+      console.error("Failed to add snippet:", error);
+      return;
+    }
+    if (data) setSnippets((arr) => [...arr, data]);
+  };
+  const resetSnippets = async () => {
+    if (!confirm("Reset snippets to defaults for everyone?")) return;
+    const { error: delErr } = await supabase.from("snippets").delete().not("id", "is", null);
+    if (delErr) {
+      console.error("Failed to reset snippets:", delErr);
+      return;
+    }
+    const seed = DEFAULT_SNIPPETS.map((s, i) => ({ ...s, position: i }));
+    const { data, error } = await supabase
+      .from("snippets")
+      .insert(seed)
+      .select("id, label, html, position");
+    if (error) {
+      console.error("Failed to seed snippets:", error);
+      return;
+    }
+    setSnippets(data ?? DEFAULT_SNIPPETS);
+  };
+
 
   // Save current sandbox as a named session
   const saveSession = () => {
