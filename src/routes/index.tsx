@@ -54,6 +54,7 @@ import {
   stripSpans,
   toAPATitleCase,
 } from "@/lib/text-tools";
+import { supabase } from "@/integrations/supabase/client";
 
 
 
