@@ -60,7 +60,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const STARTER_HTML = "";
 
-type Snippet = { label: string; html: string };
+type Snippet = { id?: string; label: string; html: string; position?: number };
 
 const DEFAULT_SNIPPETS: Snippet[] = [
   {
@@ -77,7 +77,6 @@ const DEFAULT_SNIPPETS: Snippet[] = [
   },
 ];
 
-const SNIPPETS_KEY = "html-sandbox.snippets.v1";
 const SESSIONS_KEY = "html-sandbox.sessions.v1";
 
 type SavedSession = { name: string; html: string; savedAt: string };
