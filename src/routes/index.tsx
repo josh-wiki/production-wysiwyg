@@ -937,11 +937,6 @@ function TextTools() {
 
   return (
     <div className="border-b border-border bg-card/30 px-4 py-3">
-      <div className="mb-2 flex items-center gap-2">
-        <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-          <Wand2 className="h-3.5 w-3.5" /> Text tools
-        </span>
-      </div>
       <div className="grid gap-2 md:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Textarea
