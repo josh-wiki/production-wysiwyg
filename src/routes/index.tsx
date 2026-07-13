@@ -30,7 +30,34 @@ import {
   Redo2,
   Unlock,
   Wand2,
+  Sun,
+  Moon,
 } from "lucide-react";
+
+function ThemeToggle() {
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof window === "undefined") return "dark";
+    return (localStorage.getItem("theme") as "dark" | "light") || "dark";
+  });
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("light", theme === "light");
+    root.classList.toggle("dark", theme === "dark");
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+  return (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+      aria-label="Toggle theme"
+      className="gap-1.5"
+    >
+      {theme === "dark" ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+      {theme === "dark" ? "Light" : "Dark"}
+    </Button>
+  );
+}
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -442,6 +469,9 @@ function SandboxPage() {
           <p className="text-xs text-muted-foreground">
             Visual + color-coded HTML editor with handy text utilities.
           </p>
+        </div>
+        <div className="ml-auto">
+          <ThemeToggle />
         </div>
       </header>
 
