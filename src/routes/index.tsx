@@ -470,6 +470,9 @@ function SandboxPage() {
             Visual + color-coded HTML editor with handy text utilities.
           </p>
         </div>
+        <div className="ml-auto">
+          <ThemeToggle />
+        </div>
       </header>
 
       <CollapsibleSection title="Clean & actions" icon={<Eraser className="h-3.5 w-3.5" />}>
