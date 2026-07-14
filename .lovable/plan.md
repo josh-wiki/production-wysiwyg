@@ -1,21 +1,15 @@
-## Goal
-Make the Clean button additionally strip all `<br>` tags and remove empty container elements like `<div></div>`, `<p></p>`, `<span></span>`, etc.
+## Increase dark mode text contrast
 
-## Changes
+Bump foreground/muted text lightness in the dark theme tokens in `src/styles.css` so text pops harder against the midnight indigo background.
 
-### 1. `src/lib/text-tools.ts` — add two helpers
+### Changes (`:root` block, dark theme)
+- `--foreground`: `oklch(0.97 0.01 270)` → `oklch(0.99 0.005 270)` (near-white)
+- `--muted-foreground`: `oklch(0.72 0.04 270)` → `oklch(0.86 0.03 270)` (much brighter secondary text)
+- `--card-foreground` / `--popover-foreground` / `--accent-foreground` / `--secondary-foreground` / `--sidebar-foreground` / `--sidebar-accent-foreground`: raise to `oklch(0.99 0.005 270)` to match
+- `--border`: `oklch(0.28 0.05 280)` → `oklch(0.36 0.05 280)` so bordered text/inputs read more clearly
 
-- **`stripAllBreaks(html)`** — remove every `<br>` / `<br/>` / `<br />` tag (not just consecutive/leading/trailing ones like the existing `stripExtraBreaks`).
-- **`removeEmptyElements(html)`** — iteratively remove elements with no content or only whitespace/`&nbsp;`, applied to common containers: `div, p, span, h1-h6, li, ul, ol, section, article, figure, figcaption, blockquote, td, th, tr, thead, tbody`. Skip void/self-meaningful tags (`img`, `hr`, `br`, `iframe`, `video`, `input`). Loop until no more matches (handles nesting like `<div><p></p></div>`).
+Light mode tokens untouched.
 
-### 2. `src/routes/index.tsx` — wire into Clean button
-
-In the Clean `onClick` chain (lines 483–497), replace `stripExtraBreaks` with the new `stripAllBreaks`, and wrap the result with `removeEmptyElements` before `cleanWhitespace` / `formatBlockHtml`. Update the button `title` tooltip to mention removing all `<br>` and empty containers. Update the imports at the top to include the two new helpers (and drop `stripExtraBreaks` from Clean; keep the export in text-tools since nothing else appears to use it — safe to leave).
-
-## Technical notes
-- `removeEmptyElements` uses a regex loop: `/<(tag)\b[^>]*>\s*(?:&nbsp;\s*)*<\/\1>/gi` across the allowed tag list, repeating until the string stops changing, so nested empties collapse in one pass.
-- Order in the chain: strip styles/attrs/spans first, then `stripAllBreaks`, then `removeEmptyElements` (so containers left empty after span/br removal get cleaned), then `cleanWhitespace`, then `formatBlockHtml`.
-
-## Verification
-- Build passes.
-- Paste HTML containing `<br>`, `<div></div>`, `<p> </p>`, `<div><span></span></div>` in the preview, click Clean, confirm all removed.
+### Verify
+- Build passes
+- Preview in dark mode: body copy, muted labels, and card text visibly brighter; no washed-out backgrounds
