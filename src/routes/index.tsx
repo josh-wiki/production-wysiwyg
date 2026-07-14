@@ -486,10 +486,12 @@ function SandboxPage() {
               setHtml((prev) =>
                 formatBlockHtml(
                   cleanWhitespace(
-                    stripExtraBreaks(
-                      stripSpans(
-                        stripListAttrs(
-                          stripDirLtr(stripInlineStyles(convertSuperscriptSpans(prev)))
+                    removeEmptyElements(
+                      stripAllBreaks(
+                        stripSpans(
+                          stripListAttrs(
+                            stripDirLtr(stripInlineStyles(convertSuperscriptSpans(prev)))
+                          )
                         )
                       )
                     )
@@ -497,7 +499,7 @@ function SandboxPage() {
                 )
               )
             }
-            title='Clean everything: inline styles, dir="ltr", role="presentation" from paragraphs/headings/lists, convert superscript spans to <sup>, unwrap spans, collapse extra <br> tags, and collapse whitespace'
+            title='Clean everything: inline styles, dir="ltr", role="presentation" from paragraphs/headings/lists, convert superscript spans to <sup>, unwrap spans, remove all <br> tags, remove empty containers (e.g. <div></div>), and collapse whitespace'
           >
             <Eraser className="mr-1.5 h-3.5 w-3.5" /> Clean
           </Button>
