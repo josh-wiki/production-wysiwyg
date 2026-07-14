@@ -221,6 +221,37 @@ export function convertSuperscriptSpans(html: string): string {
   );
 }
 
+// Remove ALL <br> tags (not just consecutive/leading/trailing)
+export function stripAllBreaks(html: string): string {
+  return html.replace(/<br\s*\/?>/gi, "");
+}
+
+// Remove empty container elements (whitespace or &nbsp; only), iteratively
+// so nested empties like <div><p></p></div> collapse fully.
+const EMPTY_TARGET_TAGS = [
+  "div", "p", "span",
+  "h1", "h2", "h3", "h4", "h5", "h6",
+  "li", "ul", "ol",
+  "section", "article",
+  "figure", "figcaption", "blockquote",
+  "td", "th", "tr", "thead", "tbody",
+];
+
+export function removeEmptyElements(html: string): string {
+  const group = EMPTY_TARGET_TAGS.join("|");
+  const re = new RegExp(
+    `<(${group})\\b[^>]*>(?:\\s|&nbsp;)*<\\/\\1\\s*>`,
+    "gi"
+  );
+  let prev = "";
+  let next = html;
+  while (prev !== next) {
+    prev = next;
+    next = next.replace(re, "");
+  }
+  return next;
+}
+
 // Collapse consecutive <br> tags and remove leading/trailing ones
 export function stripExtraBreaks(html: string): string {
   return html

@@ -1,23 +1,21 @@
-This is a small UI-only change in `src/routes/index.tsx`.
+## Goal
+Make the Clean button additionally strip all `<br>` tags and remove empty container elements like `<div></div>`, `<p></p>`, `<span></span>`, etc.
 
-## What to change
+## Changes
 
-1. **Section header rename**
-   - Change the `CollapsibleSection` title from `"Strip domain"` to `"Strip domain or code"`.
+### 1. `src/lib/text-tools.ts` — add two helpers
 
-2. **Remove duplicate inline label inside the expanded panel**
-   - Inside `DomainStripper`, remove the duplicate inline icon + label (`<Scissors ... /> Strip domain`) that currently appears above the input field. The placeholder, input, and Remove button stay as-is.
+- **`stripAllBreaks(html)`** — remove every `<br>` / `<br/>` / `<br />` tag (not just consecutive/leading/trailing ones like the existing `stripExtraBreaks`).
+- **`removeEmptyElements(html)`** — iteratively remove elements with no content or only whitespace/`&nbsp;`, applied to common containers: `div, p, span, h1-h6, li, ul, ol, section, article, figure, figcaption, blockquote, td, th, tr, thead, tbody`. Skip void/self-meaningful tags (`img`, `hr`, `br`, `iframe`, `video`, `input`). Loop until no more matches (handles nesting like `<div><p></p></div>`).
 
-3. **Remove duplicate inline label under Text tools**
-   - Inside `TextTools`, remove the duplicate inline icon + label (`<Wand2 ... /> Text tools`) that appears above the text areas. The textarea, stats, output buttons, and all text-tool functionality stay as-is.
+### 2. `src/routes/index.tsx` — wire into Clean button
 
-## What will remain intact
+In the Clean `onClick` chain (lines 483–497), replace `stripExtraBreaks` with the new `stripAllBreaks`, and wrap the result with `removeEmptyElements` before `cleanWhitespace` / `formatBlockHtml`. Update the button `title` tooltip to mention removing all `<br>` and empty containers. Update the imports at the top to include the two new helpers (and drop `stripExtraBreaks` from Clean; keep the export in text-tools since nothing else appears to use it — safe to leave).
 
-- All inputs, buttons, and behavior for both sections.
-- `handleStripDomain` logic and `DomainStripper` props.
-- All text-tool actions (slug, APA title case, word count, copy output, APA words editor).
+## Technical notes
+- `removeEmptyElements` uses a regex loop: `/<(tag)\b[^>]*>\s*(?:&nbsp;\s*)*<\/\1>/gi` across the allowed tag list, repeating until the string stops changing, so nested empties collapse in one pass.
+- Order in the chain: strip styles/attrs/spans first, then `stripAllBreaks`, then `removeEmptyElements` (so containers left empty after span/br removal get cleaned), then `cleanWhitespace`, then `formatBlockHtml`.
 
 ## Verification
-
-- Run the TypeScript/build check after the edits to confirm no regressions.
-- Optionally verify the UI in the preview that the section header shows the new label and the duplicate icons/labels are gone.
+- Build passes.
+- Paste HTML containing `<br>`, `<div></div>`, `<p> </p>`, `<div><span></span></div>` in the preview, click Clean, confirm all removed.
