@@ -230,6 +230,7 @@ export function stripAllBreaks(html: string): string {
 // so nested empties like <div><p></p></div> collapse fully.
 const EMPTY_TARGET_TAGS = [
   "div", "p", "span",
+  "b", "strong", "i", "em", "u",
   "h1", "h2", "h3", "h4", "h5", "h6",
   "li", "ul", "ol",
   "section", "article",
