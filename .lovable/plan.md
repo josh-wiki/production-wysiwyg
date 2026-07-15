@@ -1,15 +1,22 @@
-## Increase dark mode text contrast
+## Problem
 
-Bump foreground/muted text lightness in the dark theme tokens in `src/styles.css` so text pops harder against the midnight indigo background.
+When pasting content in the Visual or HTML editor, the pasted text is large enough that the browser scrolls the caret into view — which jumps the page to the bottom of the newly-taller editor. This happens because both editors auto-grow with content and the browser's default caret-scroll behavior kicks in after paste.
 
-### Changes (`:root` block, dark theme)
-- `--foreground`: `oklch(0.97 0.01 270)` → `oklch(0.99 0.005 270)` (near-white)
-- `--muted-foreground`: `oklch(0.72 0.04 270)` → `oklch(0.86 0.03 270)` (much brighter secondary text)
-- `--card-foreground` / `--popover-foreground` / `--accent-foreground` / `--secondary-foreground` / `--sidebar-foreground` / `--sidebar-accent-foreground`: raise to `oklch(0.99 0.005 270)` to match
-- `--border`: `oklch(0.28 0.05 280)` → `oklch(0.36 0.05 280)` so bordered text/inputs read more clearly
+## Fix
 
-Light mode tokens untouched.
+Preserve the window scroll position across paste events in both editors in `src/routes/index.tsx`.
 
-### Verify
-- Build passes
-- Preview in dark mode: body copy, muted labels, and card text visibly brighter; no washed-out backgrounds
+**VisualEditor (contentEditable div, ~line 1099):**
+- Add an `onPaste` handler on the contentEditable div that captures `window.scrollY` before the paste settles, then restores it on the next two animation frames (covers React re-render + browser caret-scroll).
+
+**CodeEditor (react-simple-code-editor textarea, ~line 1141):**
+- Attach a `paste` event listener to the underlying textarea inside the existing `useEffect`. Same pattern: capture `window.scrollY` on paste, restore it after the value update repaints.
+
+No changes to paste content, cleaning logic, formatting, or state — only scroll position is preserved.
+
+## Verification
+
+- Paste a long HTML block into Visual view → page stays at current scroll position, editor content updates.
+- Paste into HTML view → same behavior.
+- Normal typing, Undo/Redo, and Clean button unaffected.
+- Build passes.
