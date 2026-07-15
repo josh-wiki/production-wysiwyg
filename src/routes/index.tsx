@@ -445,14 +445,14 @@ function SandboxPage() {
   };
 
   // Compute [replace] token count for badge
-  const replaceCount = useMemo(() => (html.match(/\[replace\]/g) || []).length, [html]);
+  const replaceCount = useMemo(() => (html.match(/\[replace\]/gi) || []).length, [html]);
 
   const applyReplacements = (values: string[]) => {
     setHtml((prev) => {
       let i = 0;
-      return prev.replace(/\[replace\]/g, () => {
+      return prev.replace(/\[replace\]/gi, (match) => {
         const v = values[i++];
-        return v != null && v !== "" ? v : "[replace]";
+        return v != null && v !== "" ? v : match;
       });
     });
   };
