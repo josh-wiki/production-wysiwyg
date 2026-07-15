@@ -1197,7 +1197,7 @@ function CodeEditor({
             "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
           color: "#e2e8f0",
           backgroundColor: "transparent",
-          caretColor: "#a5b4fc",
+          caretColor: "#facc15",
         }}
       />
     </div>
