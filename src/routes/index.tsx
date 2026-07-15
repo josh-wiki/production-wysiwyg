@@ -1119,7 +1119,7 @@ function VisualEditor({
           lastExternal.current = next;
           onChange(next);
         }}
-        className={`min-h-[520px] bg-white text-black outline-none ${
+        className={`min-h-[520px] bg-white p-4 text-black outline-none ${
           editable ? "ring-1 ring-primary/30 ring-inset" : ""
         }`}
         style={{ caretColor: "#4f46e5" }}
