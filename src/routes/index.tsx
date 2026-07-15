@@ -1107,6 +1107,13 @@ function VisualEditor({
         ref={ref}
         contentEditable={editable}
         suppressContentEditableWarning
+        onPaste={() => {
+          const y = window.scrollY;
+          requestAnimationFrame(() => {
+            window.scrollTo({ top: y });
+            requestAnimationFrame(() => window.scrollTo({ top: y }));
+          });
+        }}
         onInput={(e) => {
           const next = (e.target as HTMLDivElement).innerHTML;
           lastExternal.current = next;
@@ -1144,15 +1151,24 @@ function CodeEditor({
     const updateCaret = () => {
       if (caretRef) caretRef.current = ta.selectionStart;
     };
+    const preserveScroll = () => {
+      const y = window.scrollY;
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: y });
+        requestAnimationFrame(() => window.scrollTo({ top: y }));
+      });
+    };
     ta.addEventListener("keyup", updateCaret);
     ta.addEventListener("click", updateCaret);
     ta.addEventListener("focus", updateCaret);
     ta.addEventListener("select", updateCaret);
+    ta.addEventListener("paste", preserveScroll);
     return () => {
       ta.removeEventListener("keyup", updateCaret);
       ta.removeEventListener("click", updateCaret);
       ta.removeEventListener("focus", updateCaret);
       ta.removeEventListener("select", updateCaret);
+      ta.removeEventListener("paste", preserveScroll);
     };
   }, [caretRef, textareaRef]);
 
