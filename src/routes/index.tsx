@@ -1122,7 +1122,7 @@ function VisualEditor({
         className={`min-h-[520px] bg-white p-4 text-black outline-none ${
           editable ? "ring-1 ring-primary/30 ring-inset" : ""
         }`}
-        style={{ caretColor: "#4f46e5" }}
+        style={{ caretColor: "#ef4444" }}
       />
     </div>
   );
@@ -1197,7 +1197,7 @@ function CodeEditor({
             "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
           color: "#e2e8f0",
           backgroundColor: "transparent",
-          caretColor: "#a5b4fc",
+          caretColor: "#facc15",
         }}
       />
     </div>
