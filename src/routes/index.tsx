@@ -477,53 +477,6 @@ function SandboxPage() {
         </div>
       </header>
 
-      <CollapsibleSection title="Clean & actions" icon={<Eraser className="h-3.5 w-3.5" />}>
-        <div className="flex flex-wrap items-center gap-2 px-4 py-2.5">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() =>
-              setHtml((prev) =>
-                formatBlockHtml(
-                  cleanWhitespace(
-                    removeEmptyElements(
-                      stripAllBreaks(
-                        stripSpans(
-                          stripListAttrs(
-                            stripDirLtr(stripInlineStyles(convertSuperscriptSpans(prev)))
-                          )
-                        )
-                      )
-                    )
-                  )
-                )
-              )
-            }
-            title='Clean everything: inline styles, dir="ltr", role="presentation" from paragraphs/headings/lists, convert superscript spans to <sup>, unwrap spans, remove all <br> tags, remove empty containers (e.g. <div></div>), and collapse whitespace'
-          >
-            <Eraser className="mr-1.5 h-3.5 w-3.5" /> Clean
-          </Button>
-
-          <Button variant="ghost" size="sm" onClick={handleReset}>
-            <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reset
-          </Button>
-          <Button variant="outline" size="sm" onClick={handleDownload}>
-            <Download className="mr-1.5 h-3.5 w-3.5" /> .html
-          </Button>
-          <Button size="sm" onClick={handleCopy} className="min-w-[110px]">
-            {copied ? (
-              <>
-                <Check className="mr-1.5 h-3.5 w-3.5" /> Copied
-              </>
-            ) : (
-              <>
-                <Copy className="mr-1.5 h-3.5 w-3.5" /> Copy HTML
-              </>
-            )}
-          </Button>
-        </div>
-      </CollapsibleSection>
-
       <CollapsibleSection title="Sessions" icon={<Save className="h-3.5 w-3.5" />}>
         <div className="flex flex-col gap-2 px-4 py-2.5">
           <div className="flex flex-wrap items-center gap-2">
@@ -713,89 +666,139 @@ function SandboxPage() {
         )}
       </CollapsibleSection>
 
-      <div className="flex flex-wrap items-center gap-2 border-b border-border bg-card/20 px-4 py-2.5">
-        <div className="ml-auto flex flex-wrap items-center gap-2">
-          <span className="inline-flex items-center gap-1 rounded border border-primary/50 bg-primary/15 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-primary">
-            <FlaskConical className="h-3 w-3" /> Sandbox
-          </span>
-          <button
-            type="button"
-            onClick={() => setEditable((v) => !v)}
-            className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] uppercase tracking-wider transition-colors ${
-              editable
-                ? "border-primary/50 bg-primary/15 text-primary"
-                : "border-border bg-secondary/70 text-muted-foreground hover:text-foreground"
-            }`}
+      <CollapsibleSection title="Clean & actions" icon={<Eraser className="h-3.5 w-3.5" />}>
+        <div className="flex flex-wrap items-center gap-2 px-4 py-2.5">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() =>
+              setHtml((prev) =>
+                formatBlockHtml(
+                  cleanWhitespace(
+                    removeEmptyElements(
+                      stripAllBreaks(
+                        stripSpans(
+                          stripListAttrs(
+                            stripDirLtr(stripInlineStyles(convertSuperscriptSpans(prev)))
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              )
+            }
+            title='Clean everything: inline styles, dir="ltr", role="presentation" from paragraphs/headings/lists, convert superscript spans to <sup>, unwrap spans, remove all <br> tags, remove empty containers (e.g. <div></div>), and collapse whitespace'
           >
-            {editable ? (
+            <Eraser className="mr-1.5 h-3.5 w-3.5" /> Clean
+          </Button>
+
+          <Button variant="ghost" size="sm" onClick={handleReset}>
+            <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Reset
+          </Button>
+          <Button variant="outline" size="sm" onClick={handleDownload}>
+            <Download className="mr-1.5 h-3.5 w-3.5" /> .html
+          </Button>
+          <Button size="sm" onClick={handleCopy} className="min-w-[110px]">
+            {copied ? (
               <>
-                <Unlock className="h-3 w-3" /> Editing
+                <Check className="mr-1.5 h-3.5 w-3.5" /> Copied
               </>
             ) : (
               <>
-                <Lock className="h-3 w-3" /> Locked
+                <Copy className="mr-1.5 h-3.5 w-3.5" /> Copy HTML
               </>
             )}
-          </button>
-          <span className="mx-1 h-5 w-px bg-border" />
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={undo}
-            title="Undo (Ctrl/Cmd+Z)"
-            className="h-8 px-2"
-          >
-            <Undo2 className="h-3.5 w-3.5" />
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={redo}
-            title="Redo (Ctrl/Cmd+Shift+Z)"
-            className="h-8 px-2"
-          >
-            <Redo2 className="h-3.5 w-3.5" />
-          </Button>
-          <span className="mx-1 h-5 w-px bg-border" />
-          <Tabs value={view} onValueChange={(v) => setView(v as View)}>
-            <TabsList className="bg-secondary">
-              <TabsTrigger
-                value="visual"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                <MousePointerClick className="mr-1 h-3.5 w-3.5" /> Visual
-              </TabsTrigger>
-              <TabsTrigger
-                value="html"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                <Code2 className="mr-1 h-3.5 w-3.5" /> HTML
-              </TabsTrigger>
-              <TabsTrigger
-                value="split"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                <Columns2 className="mr-1 h-3.5 w-3.5" /> Split
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
         </div>
-      </div>
+      </CollapsibleSection>
 
-      <main className="flex-1 overflow-auto bg-background p-4">
-        {view === "visual" ? (
-          <VisualEditor html={html} editable={editable} onChange={setHtml} />
-        ) : view === "html" ? (
-          <CodeEditor
-            html={html}
-            editable={editable}
-            onChange={setHtml}
-            caretRef={codeCaretRef}
-            textareaRef={codeTextareaRef}
-          />
-        ) : (
-          <div className="grid h-full gap-4 lg:grid-cols-2">
+      <CollapsibleSection
+        title={`Editor — ${view === "visual" ? "Visual" : view === "html" ? "HTML" : "Split"}`}
+        icon={
+          view === "visual" ? (
+            <MousePointerClick className="h-3.5 w-3.5" />
+          ) : view === "html" ? (
+            <Code2 className="h-3.5 w-3.5" />
+          ) : (
+            <Columns2 className="h-3.5 w-3.5" />
+          )
+        }
+        defaultOpen
+      >
+        <div className="flex flex-wrap items-center gap-2 border-b border-border bg-card/20 px-4 py-2.5">
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded border border-primary/50 bg-primary/15 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-primary">
+              <FlaskConical className="h-3 w-3" /> Sandbox
+            </span>
+            <button
+              type="button"
+              onClick={() => setEditable((v) => !v)}
+              className={`inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-[10px] uppercase tracking-wider transition-colors ${
+                editable
+                  ? "border-primary/50 bg-primary/15 text-primary"
+                  : "border-border bg-secondary/70 text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {editable ? (
+                <>
+                  <Unlock className="h-3 w-3" /> Editing
+                </>
+              ) : (
+                <>
+                  <Lock className="h-3 w-3" /> Locked
+                </>
+              )}
+            </button>
+            <span className="mx-1 h-5 w-px bg-border" />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={undo}
+              title="Undo (Ctrl/Cmd+Z)"
+              className="h-8 px-2"
+            >
+              <Undo2 className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={redo}
+              title="Redo (Ctrl/Cmd+Shift+Z)"
+              className="h-8 px-2"
+            >
+              <Redo2 className="h-3.5 w-3.5" />
+            </Button>
+            <span className="mx-1 h-5 w-px bg-border" />
+            <Tabs value={view} onValueChange={(v) => setView(v as View)}>
+              <TabsList className="bg-secondary">
+                <TabsTrigger
+                  value="visual"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <MousePointerClick className="mr-1 h-3.5 w-3.5" /> Visual
+                </TabsTrigger>
+                <TabsTrigger
+                  value="html"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Code2 className="mr-1 h-3.5 w-3.5" /> HTML
+                </TabsTrigger>
+                <TabsTrigger
+                  value="split"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Columns2 className="mr-1 h-3.5 w-3.5" /> Split
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </div>
+
+        <div className="min-h-[560px] overflow-auto bg-background p-4">
+          {view === "visual" ? (
             <VisualEditor html={html} editable={editable} onChange={setHtml} />
+          ) : view === "html" ? (
             <CodeEditor
               html={html}
               editable={editable}
@@ -803,10 +806,20 @@ function SandboxPage() {
               caretRef={codeCaretRef}
               textareaRef={codeTextareaRef}
             />
-          </div>
-        )}
-      </main>
-
+          ) : (
+            <div className="grid h-full gap-4 lg:grid-cols-2">
+              <VisualEditor html={html} editable={editable} onChange={setHtml} />
+              <CodeEditor
+                html={html}
+                editable={editable}
+                onChange={setHtml}
+                caretRef={codeCaretRef}
+                textareaRef={codeTextareaRef}
+              />
+            </div>
+          )}
+        </div>
+      </CollapsibleSection>
     </div>
   );
 }

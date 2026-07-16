@@ -1,22 +1,33 @@
-## Problem
+## Goal
 
-When pasting content in the Visual or HTML editor, the pasted text is large enough that the browser scrolls the caret into view — which jumps the page to the bottom of the newly-taller editor. This happens because both editors auto-grow with content and the browser's default caret-scroll behavior kicks in after paste.
+Wrap the editor area (Visual / HTML / Split toolbar + editing surface) into a labeled, collapsible section, and reorder the panels so **Clean & actions** sits directly above it.
 
-## Fix
+## Changes (all in `src/routes/index.tsx`)
 
-Preserve the window scroll position across paste events in both editors in `src/routes/index.tsx`.
+1. **Wrap the editor in a `CollapsibleSection`**
+   - Combine the current view-mode toolbar (lines ~716–783: Sandbox chip, Editing/Locked toggle, Undo/Redo, and the Visual/HTML/Split tabs) plus the `<main>` editor surface (lines ~785–808) inside a single `CollapsibleSection`.
+   - Title: **"Editor"** with a small subtitle showing the active view (Visual / HTML / Split) reflected via the icon. Icon: `Code2` (or the icon matching current `view`).
+   - `defaultOpen` so the editor is visible on load.
+   - Keep the tabs and toolbar controls inside the section header row (below the collapsible header) so collapsing hides both the toolbar and the editing surface.
 
-**VisualEditor (contentEditable div, ~line 1099):**
-- Add an `onPaste` handler on the contentEditable div that captures `window.scrollY` before the paste settles, then restores it on the next two animation frames (covers React re-render + browser caret-scroll).
+2. **Reorder sections** so the top-to-bottom order becomes:
+   ```
+   Header
+   Sessions
+   Strip domain or code
+   Text tools
+   Fill [replace] tokens
+   Insert snippets
+   Clean & actions        <-- moved here (was at top)
+   Editor (collapsible)   <-- new wrapper around toolbar + main
+   ```
+   This puts Clean & actions immediately above the collapsible Editor, as requested.
 
-**CodeEditor (react-simple-code-editor textarea, ~line 1141):**
-- Attach a `paste` event listener to the underlying textarea inside the existing `useEffect`. Same pattern: capture `window.scrollY` on paste, restore it after the value update repaints.
+3. **Layout tweaks**
+   - The `<main>` inside the collapsible loses `flex-1` (CollapsibleSection isn't a flex child in the same way); give the editor container a sensible `min-h-[560px]` so it doesn't collapse to nothing while still growing with content.
+   - Keep the outer page container as `flex min-h-screen w-full flex-col` — no structural changes outside the reorder + wrap.
 
-No changes to paste content, cleaning logic, formatting, or state — only scroll position is preserved.
+## Out of scope
 
-## Verification
-
-- Paste a long HTML block into Visual view → page stays at current scroll position, editor content updates.
-- Paste into HTML view → same behavior.
-- Normal typing, Undo/Redo, and Clean button unaffected.
-- Build passes.
+- No changes to editor behavior (paste handling, caret color, token replacement, snippets, cleaning logic).
+- No new components or state; reusing existing `CollapsibleSection`.
